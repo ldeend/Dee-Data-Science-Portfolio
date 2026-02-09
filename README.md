@@ -6,9 +6,9 @@ This repository is intended to showcase my data science projects and capabilitie
 
 Here is an outline of how this repository will be organized:
 
-- `EDA/` – Exploratory data analysis projects  
-- `Visualizations/` – Data visualizations
-- `Models/` – Statistical and machine learning models  
+- `EDA` – Exploratory data analysis projects  
+- `Visualizations` – Data visualizations
+- `Models` – Statistical and machine learning models  
 
 For each project, there will be a detailed README that includes the dataset, methodology, results, insights, and steps for reproducibility.
 
