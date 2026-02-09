@@ -29,10 +29,10 @@ st.dataframe(team_df)
 st.subheader("Filtered by Conference")
 CONF = st.multiselect("Conference", df["CONF"].unique())
 
-conf_df = team_df.copy()
+
 
 if CONF:
-    conf_df = conf_df[conf_df["CONF"].isin(CONF)]
+    conf_df = df[df["CONF"].isin(CONF)]
 
 
 st.dataframe(conf_df)
