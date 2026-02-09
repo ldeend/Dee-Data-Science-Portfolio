@@ -15,8 +15,8 @@ df = pd.read_csv("basic_streamlit_app/data/cbb25.csv")
 st.subheader("All teams, full dataset")
 st.dataframe(df)
 
-team = st.selectbox("Select a team:", df["team"].unique())
-team_df = df[df["team"] == team]
+team = st.selectbox("Select a team:", df["Team"].unique())
+team_df = df[df["Team"] == Team]
 
 st.subheader("Team Data")
 st.dataframe(team_df)
