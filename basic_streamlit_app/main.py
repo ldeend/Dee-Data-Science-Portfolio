@@ -12,3 +12,11 @@ st.write(
 # data
 df = pd.read_csv("basic_streamlit_app/data/cbb25.csv")
 
+st.subheader("All teams, full dataset")
+st.datafram(df)
+
+team = st.selectbox("Select a team:", df["team"].unique())
+team_df = df[df["team"] == team]
+
+st.subheader("Team Data")
+st.dataframe(team_df)
