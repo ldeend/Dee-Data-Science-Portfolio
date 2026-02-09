@@ -17,15 +17,22 @@ st.dataframe(df)
 
 
 # team filter
+st.subheader("Specific Team Data")
 Team = st.selectbox("Select a team:", df["Team"].unique())
 team_df = df[df["Team"] == Team]
 
-st.subheader("Team Data")
+
 st.dataframe(team_df)
 
 # conference filter
 
+st.subheader("Filtered by Conference")
 CONF = st.multiselect("Conference", df["CONF"].unique())
-if CONF:
-    conf_df = team_df[team_df["CONF"].isin(CONF)]
 
+conf_df = team_df.copy()
+
+if CONF:
+    conf_df = conf_df[conf_df["CONF"].isin(CONF)]
+
+
+st.dataframe(conf_df)
