@@ -25,7 +25,7 @@ st.dataframe(team_df)
 
 # conference filter
 
-conference = st.multiselect("Conference", df["CONF"].unique())
-if conference:
-    filtered_df = filtered_df[filtered_df["CONF"].isin(conference)]
+CONF = st.multiselect("Conference", df["CONF"].unique())
+if CONF:
+    conf_df = team_df[team_df["CONF"].isin(CONF)]
 
