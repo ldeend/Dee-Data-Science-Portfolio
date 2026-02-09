@@ -18,16 +18,15 @@ st.dataframe(df)
 
 # team filter
 st.subheader("Specific Team Data")
-Team = st.selectbox("Select a team:", df["Team"].unique())
+Team = st.selectbox("Select a team", df["Team"].unique())
 team_df = df[df["Team"] == Team]
-
 
 st.dataframe(team_df)
 
-# conference filter
 
+# conference filter
 st.subheader("Filter by Conference")
-CONF = st.multiselect("Conference", df["CONF"].unique())
+CONF = st.multiselect("Choose one or mulitple conferences", df["CONF"].unique())
 
 if CONF:
     conf_df = df[df["CONF"].isin(CONF)]
@@ -39,18 +38,16 @@ st.dataframe(conf_df)
 st.subheader("Filter by Wins")
 
 min_wins, max_wins = st.slider(
-    "Filter by Wins",
+    "Number of Wins",
     int(df["W"].min()), 
     int(df["W"].max()), 
     (int(df["W"].min()), int(df["W"].max()))
 )
 
-
 wins_df = df[
     (df["W"] >= min_wins) & 
     (df["W"] <= max_wins)
 ]
-
 
 st.dataframe(wins_df)
 
