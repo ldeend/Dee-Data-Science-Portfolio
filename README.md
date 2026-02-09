@@ -12,3 +12,11 @@ Here is an outline of how this repository will be organized:
 
 For each project, there will be a detailed README that includes the dataset, methodology, results, insights, and steps for reproducibility.
 
+
+## College Basketball Stats Streamlit App
+
+This is an interactive Streamlit app that allows users to look at and explore Division I Men's College Basketball teams and their stats via different filters. 
+This project demonstrates skills in interactive data visualization, filtering, and building web apps in Python using Streamlit.  
+Learn more about the app's features and how to launch it in the folder `basis_streamlit_app/`.
+
+
