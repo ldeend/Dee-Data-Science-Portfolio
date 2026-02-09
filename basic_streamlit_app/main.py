@@ -37,17 +37,13 @@ st.dataframe(conf_df)
 # wins slider filter
 st.subheader("Filter by Wins")
 
-min_wins, max_wins = st.slider(
-    "Number of Wins",
+min_wins, max_wins = st.slider("Number of Wins",
     int(df["W"].min()), 
     int(df["W"].max()), 
     (int(df["W"].min()), int(df["W"].max()))
 )
 
-wins_df = df[
-    (df["W"] >= min_wins) & 
-    (df["W"] <= max_wins)
-]
+wins_df = df[(df["W"] >= min_wins) & (df["W"] <= max_wins)]
 
 st.dataframe(wins_df)
 
