@@ -26,13 +26,31 @@ st.dataframe(team_df)
 
 # conference filter
 
-st.subheader("Filtered by Conference")
+st.subheader("Filter by Conference")
 CONF = st.multiselect("Conference", df["CONF"].unique())
-
-
 
 if CONF:
     conf_df = df[df["CONF"].isin(CONF)]
 
-
 st.dataframe(conf_df)
+
+
+# wins slider filter
+st.subheader("Filter by Wins")
+
+min_wins, max_wins = st.slider(
+    "Filter by Wins",
+    int(df["W"].min()), 
+    int(df["W"].max()), 
+    (int(df["W"].min()), int(df["W"].max()))
+)
+
+
+wins_df = df[
+    (df["W"] >= min_wins) & 
+    (df["W"] <= max_wins)
+]
+
+
+st.dataframe(wins_df)
+
