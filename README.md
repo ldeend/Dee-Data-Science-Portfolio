@@ -25,7 +25,7 @@ In this project, I cleaned and transformed the mutant_moneyball.csv dataset usin
 The data was reshaped using `melt()` and splitting the columns and column names with string operations. This new data was tidy, giving each variable its own unique column and each observation its own unique row. Finally, I used pivot tables and visualizations to show the most popular characters and the valuation across time and source.
 
 ### Motivation 
-The motivation for this project is to build, refine, and showcase my data science abilities. This project complements my overall coding portfolio by highlighting various important skills, such as:
+The motivation for this project is to build, refine, and showcase my data science abilities, specifically related to data cleaning and reshaping. This project complements my overall coding portfolio by highlighting various important skills, such as:
 - understanding and applying foundational data science principles in tidy data
 - cleaning and reshaping messy datasets 
 - using pandas for dataset manipulation and aggregation 
