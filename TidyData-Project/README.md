@@ -11,7 +11,7 @@ The goal of this project is to use tidy data principles to clean a dataset and e
 ## Instructions
 
 ### 1. Open the notebook
-Open the `TidyProject.ipynb` file in Jupyter Notebook or Google Colab by using this [link](https://github.com/ldeend/Dee-Data-Science-Portfolio/blob/main/TidyData-Project/TidyProject.ipynb). No local file path setup is needed for the `mutant_moneyball.csv` dataset since the it is loaded from GitHub
+Open the `TidyProject.ipynb` file in Jupyter Notebook or Google Colab from [here](https://github.com/ldeend/Dee-Data-Science-Portfolio/blob/main/TidyData-Project/TidyProject.ipynb). No local file path setup is needed for the `mutant_moneyball.csv` dataset since the it is loaded from GitHub
 
 ### 2. Install dependencies
 Install the required packages pandas (for data analysis) and matplotlib (for visualizations).
@@ -28,9 +28,17 @@ Finally, run all cells in the notebook. The notebook will load the dataset, clea
 
 ## Dataset Description
 
+### Dataset Background
 The dataset `mutant_moneyball.csv` contains valuation data for comics featuring different X-Men members across the late 1900s and various sources. The original dataset and more information about it can be found [here from EliCash82](https://github.com/EliCash82/mutantmoneyball/tree/main). It is called `MutantMoneyballOpenData.csv`. 
 
-To get from this dataset to `mutant_moneyball.csv`, the dataset was reduced for this project to only include the columns that follow this format: `TotalValue[Decade]_[Source]`. For example, `TotalValue60s_ebay`, which means the total value of each X-Men team member's total number of issues as reflected by ebay's highest sale of comics released in the 1960s.
+To get from this dataset to `mutant_moneyball.csv`, the dataset was reduced for this project to only include the columns that follow this format: `TotalValue[Decade]_[Source]`. For example, `TotalValue60s_ebay`.
+
+### Variable names explained
+
+Members is straightforward and contains either the superhero name of the X-Man, such as `longshot`, or the civilian name of the X-Man, such as `warrenWorthington`. No X-Men are included more than once. Source idicates where the valuation came from, whether it is ebay, oStreet, Wiz, or Heritage. Similarily, Decade indicates which timeframe the comic came from: 60s (1963-1969), 70s (1970-1979), 80s (1980-1989), 90s (1990-1992). 
+
+The term value means something slighlty different for each source, so for more detail again go to [the original repo](https://github.com/EliCash82/mutantmoneyball/tree/main). In general, the term value means total sales/highest sale. An example column `TotalValue60s_ebay` means the total value of each X-Men team member's total number of issues released between 1963 and 1969 as reflected by ebay sales in 2022 in which sellers tagged the issue as VG (Very Good) Condition.
+
 
 ## References 
 
