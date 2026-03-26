@@ -24,7 +24,7 @@ Learn more about the app's features and how to launch it in the folder `basis_st
 
 ## Tidy Data Project
 
-[View Project](https://github.com/YOUR_USERNAME/TidyData-Project)
+[View Project](https://github.com/ldeend/Dee-Data-Science-Portfolio/tree/main/TidyData-Project)
 
 A brief description of what the Tidy Data project entails.
 An explanation of how this project complements your overall coding portfolio.
