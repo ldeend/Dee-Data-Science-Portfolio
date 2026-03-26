@@ -4,13 +4,9 @@ This repository is intended to showcase my data science projects and capabilitie
 
 ## Planned Project Structure
 
-Here is an outline of how this repository will be organized:
+This repository will be home to many different kinds of work. The primary concepts that will be present in these projects are `Exploratory Data Analysis`, `Data Cleaning and Visualization`, and `Statistical and Machine Learning Modeling`.
 
-- `EDA` – Exploratory data analysis projects  
-- `Visualizations` – Data visualizations
-- `Models` – Statistical and machine learning models  
-
-For each project, there will be a detailed README that includes the dataset, methodology, results, insights, and steps for reproducibility.
+For each project, there will be a folder containing the dataset, methodology, results, insights, and steps for reproducibility in the README.
 
 
 ## College Basketball Stats Streamlit App
