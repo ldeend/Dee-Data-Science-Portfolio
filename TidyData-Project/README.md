@@ -11,10 +11,10 @@ The goal of this project is to use tidy data principles to clean a dataset and e
 ## Instructions
 
 ### 1. Open the notebook
-Open the `TidyProject.ipynb` file in Jupyter Notebook or Google Colab from [here](https://github.com/ldeend/Dee-Data-Science-Portfolio/blob/main/TidyData-Project/TidyProject.ipynb). No local file path setup is needed for the `mutant_moneyball.csv` dataset since the it is loaded from GitHub
+Open the `TidyProject.ipynb` file in Jupyter Notebook or Google Colab from [here](https://github.com/ldeend/Dee-Data-Science-Portfolio/blob/main/TidyData-Project/TidyProject.ipynb). No local file path setup is needed for the `mutant_moneyball.csv` dataset since the it is loaded from GitHub.
 
 ### 2. Install dependencies
-Install the required packages pandas (for data analysis) and matplotlib (for visualizations).
+Install the required packages pandas (for data analysis) and matplotlib (for visualizations) if needed.
 
 ```bash
 pip install pandas matplotlib
