@@ -9,18 +9,14 @@ This repository will be home to many different kinds of work. The primary concep
 For each project, there will be a folder containing the dataset, methodology, results, insights, and steps for reproducibility in the README.
 
 
-## College Basketball Stats Streamlit App
-
-[View Project](https://github.com/ldeend/Dee-Data-Science-Portfolio/tree/main/basic_streamlit_app)
+## [College Basketball Stats Streamlit App](https://github.com/ldeend/Dee-Data-Science-Portfolio/tree/main/basic_streamlit_app)
 
 This is an interactive Streamlit app that allows users to look at and explore Division I Men's College Basketball teams and their stats via different filters. 
 This project demonstrates skills in interactive data visualization, filtering, and building web apps in Python using Streamlit.  
 Learn more about the app's features and how to launch it in the folder `basis_streamlit_app/`.
 
 
-## Tidy Data Project
-
-[View Project](https://github.com/ldeend/Dee-Data-Science-Portfolio/tree/main/TidyData-Project)
+## [Tidy Data Project](https://github.com/ldeend/Dee-Data-Science-Portfolio/tree/main/TidyData-Project)
 
 A brief description of what the Tidy Data project entails.
 An explanation of how this project complements your overall coding portfolio.
