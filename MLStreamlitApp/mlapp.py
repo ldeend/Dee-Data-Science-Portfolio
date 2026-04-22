@@ -66,7 +66,7 @@ with st.sidebar:
         st.divider()
         st.header("Tune Hyperparameters")
 
-        random_state = st.number_input("Random state", value=100, step=1)
+        random_state = st.number_input("Random seed", value=100, step=1)
         test_size = st.slider("Test set size", 0.1, 0.5, 0.2, 0.05)
 
 
