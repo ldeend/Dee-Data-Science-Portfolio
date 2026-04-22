@@ -7,6 +7,13 @@ An interactive Streamlit application for exploring supervised machine learning m
 
 ## Project Overview
 
+In this project, I built a live, interactive web application with Python and Streamlit where users can: 
+- Upload a dataset
+- Train a supervised machine learning model on it (either Logistic Regression or Linear Regression, depending on the target variable used). 
+- Tune hyperparameters
+- Change the train/test split
+
+There is no coding experience required, and all machine learning topics are explained in the app.
 
 ## Setup Instructions (How to Run Locally)
 
@@ -38,11 +45,10 @@ streamlit run mlapp.py
 This will launch the app in your browser at the IP `http://localhost:8501/`.
 
 
-
 ## App Features
+
 
 
 ## References
 
 
-## Example Visualizations
