@@ -82,6 +82,11 @@ with st.sidebar:
                 0.0, 10.0, 1.0, 0.1,
                 help="Penalizes large coefficients to reduce overfitting. α = 0 is plain OLS; higher values shrink coefficients more aggressively.",
             )
+            model_params["penalty"] = st.selectbox(
+                "Penalty type",
+                ["l2", "l1"],
+                help="L2 (Ridge): shrinks all coefficients toward zero.\nL1 (Lasso): can zero out coefficients entirely, acting as feature selection.",
+            )
 
         elif model_name == "Logistic Regression":
             model_params["C"] = st.slider(
