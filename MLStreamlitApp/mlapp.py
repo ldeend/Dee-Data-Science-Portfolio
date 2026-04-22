@@ -6,7 +6,7 @@ import seaborn as sns
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.linear_model import Ridge, LogisticRegression
 from sklearn.metrics import (
     # Classification
     accuracy_score, precision_score, recall_score,
@@ -72,9 +72,11 @@ with st.sidebar:
         model_params: dict = {}
 
         if model_name == "Linear Regression":
-            model_params["fit_intercept"] = st.checkbox("Fit intercept", value=True)
-            # StandardScaler toggle (meaningful for LR coefficient interpretation)
-            scale_features = st.checkbox("Scale features (StandardScaler)", value=True)
+            model_params["alpha"] = st.slider(
+                "Regularization strength (α)",
+                0.0, 10.0, 1.0, 0.1,
+                help="Higher α → stronger regularization, shrinks coefficients toward zero. α = 0 is equivalent to plain OLS.",
+            )
 
         elif model_name == "Logistic Regression":
             model_params["C"] = st.slider(
@@ -82,18 +84,17 @@ with st.sidebar:
                 0.01, 10.0, 1.0, 0.01,
                 help="Smaller C → stronger regularization.",
             )
-            model_params["max_iter"] = st.slider("Max iterations", 100, 2000, 200, 100)
-            model_params["solver"] = st.selectbox(
-                "Solver", ["lbfgs", "saga", "liblinear"],
-                help="lbfgs works well for small datasets; saga supports l1/l2 on large data.",
-            )
             model_params["penalty"] = st.selectbox(
                 "Penalty",
-                ["l2", "l1", "none"],
-                help="l1 drives some coefficients to zero (feature selection); l2 shrinks all.",
+                ["l2", "l1"],
+                help="L2 shrinks all coefficients toward zero; L1 can zero out coefficients entirely (built-in feature selection).",
             )
+            # liblinear is used because it supports both l1 and l2
+            model_params["solver"] = "liblinear"
+            model_params["max_iter"] = 1000
             model_params["random_state"] = int(random_state)
-            scale_features = st.checkbox("Scale features (StandardScaler)", value=True)
+
+        scale_features = st.checkbox("Scale features (StandardScaler)", value=True)
 
         st.divider()
         train_btn = st.button("Train Model", use_container_width=True, type="primary")
@@ -111,5 +112,5 @@ with st.expander("Quick view of Dataset", expanded=True):
     st.dataframe(df.describe(), use_container_width=True)
 
 if not feature_cols:
-    st.warning("Select at least one feature column")
+    st.warning("Please select at least one feature column.")
     st.stop()
