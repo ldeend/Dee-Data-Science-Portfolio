@@ -6,7 +6,7 @@ import seaborn as sns
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OrdinalEncoder
-from sklearn.linear_model import Ridge, LogisticRegression
+from sklearn.linear_model import Ridge, Lasso, LogisticRegression
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
     f1_score, roc_auc_score, confusion_matrix,
@@ -14,20 +14,21 @@ from sklearn.metrics import (
     mean_squared_error, mean_absolute_error, r2_score,
 )
 
-## Page setup
+# ── Page setup ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Supervised Machine Learning Tool", layout="wide")
 
 st.title("Supervised Machine Learning Tool")
 st.markdown(
-    "Upload a dataset, experiment with hyperparameters, and observe how these affect model training and performance."
+    "Upload a CSV dataset, choose a model, and tune hyperparameters. "
+    "Results update automatically as you change any setting."
 )
 
-## Helper
+# ── Helper ────────────────────────────────────────────────────────────────────
 def is_continuous(series):
     """A numeric column with more than 10 unique values is treated as continuous."""
     return pd.api.types.is_numeric_dtype(series) and series.nunique() > 10
 
-## Sidebar
+# ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.header("1 · Dataset")
     uploaded = st.file_uploader("Upload a CSV file", type="csv")
@@ -81,11 +82,6 @@ with st.sidebar:
                 0.0, 10.0, 1.0, 0.1,
                 help="Penalizes large coefficients to reduce overfitting. α = 0 is plain OLS; higher values shrink coefficients more aggressively.",
             )
-            model_params["penalty"] = st.selectbox(
-                "Penalty type",
-                ["l2", "l1"],
-                help="L2 (Ridge): shrinks all coefficients toward zero.\nL1 (Lasso): can zero out coefficients entirely, acting as feature selection.",
-            )
 
         elif model_name == "Logistic Regression":
             model_params["C"] = st.slider(
@@ -103,9 +99,9 @@ with st.sidebar:
             model_params["max_iter"] = 1000
             model_params["random_state"] = int(random_state)
 
-## Main panel
+# ── Main panel ────────────────────────────────────────────────────────────────
 if df is None:
-    st.info("Upload a dataset to begin analaysis")
+    st.info("👈 Upload a CSV file from the sidebar to get started.")
     st.stop()
 
 # Dataset preview
@@ -126,7 +122,7 @@ if not feature_cols:
     st.warning("Please select at least one feature column from the sidebar.")
     st.stop()
 
-## Compatibility check (shown before training, not just on error)
+# ── Compatibility check (shown before training, not just on error) ────────────
 target_is_continuous = is_continuous(df[target_col])
 
 if model_name == "Linear Regression" and not target_is_continuous:
@@ -147,7 +143,7 @@ if model_name == "Logistic Regression" and target_is_continuous:
     )
     st.stop()
 
-## Training
+# ── Auto-training (runs on every widget change) ───────────────────────────────
 with st.spinner("Training model…"):
     try:
         working = df[feature_cols + [target_col]].copy()
@@ -169,7 +165,7 @@ with st.spinner("Training model…"):
         working = working.dropna()
         dropped = before - len(working)
         if dropped > 0:
-            st.warning(f"{dropped} row(s) with missing values were dropped before training.")
+            st.warning(f"⚠️ {dropped} row(s) with missing values were dropped before training.")
 
         X = working[feature_cols].values
         y = working[target_col].values
@@ -186,9 +182,11 @@ with st.spinner("Training model…"):
         X_train = scaler.fit_transform(X_train)
         X_test  = scaler.transform(X_test)
 
-        ## LINEAR REGRESSION 
+        # ── LINEAR REGRESSION ─────────────────────────────────────────────────
         if model_name == "Linear Regression":
-            model = Ridge(**model_params)
+            penalty = model_params.pop("penalty")  # Ridge/Lasso don't accept a penalty arg
+            LinearModel = Lasso if penalty == "l1" else Ridge
+            model = LinearModel(**model_params)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
 
@@ -205,8 +203,8 @@ with st.spinner("Training model…"):
             c3.metric("RMSE", f"{rmse:.4f}")
             c4.metric("MAE", f"{mae:.4f}")
 
-            ## What's a good score?
-            with st.expander("How to interpret these metrics"):
+            # ── What does a good score look like? ─────────────────────────────
+            with st.expander("ℹ️ How to interpret these metrics"):
                 st.markdown("""
 | Metric | What it measures | Good range |
 |--------|-----------------|------------|
@@ -267,7 +265,7 @@ with st.spinner("Training model…"):
                 plt.close(fig)
                 st.caption("Green bars = positive relationship with the target. Red bars = negative relationship. Longer bars = stronger influence. Features are scaled, so coefficients are directly comparable.")
 
-        ## LOGISTIC REGRESSION
+        # ── LOGISTIC REGRESSION ───────────────────────────────────────────────
         elif model_name == "Logistic Regression":
             model = LogisticRegression(**model_params)
             model.fit(X_train, y_train)
@@ -300,8 +298,8 @@ with st.spinner("Training model…"):
             c4.metric("F1 Score",  f"{f1:.4f}")
             c5.metric("AUC-ROC",   f"{auc:.4f}")
 
-            ## What's a good score?
-            with st.expander("How to interpret these metrics"):
+            # ── What does a good score look like? ─────────────────────────────
+            with st.expander("ℹ️ How to interpret these metrics"):
                 st.markdown("""
 | Metric | What it measures | Good range |
 |--------|-----------------|------------|
