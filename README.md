@@ -35,5 +35,20 @@ The motivation for this project is to build, refine, and showcase my data scienc
 
 ### Project Overview
 
-**[Live ML App](https://lucasdee-mlapp.streamlit.app)** 
+In this project, I built a live, interactive web application with Python and Streamlit where users can upload a dataset and train a supervised machine learning model on it (either Logistic Regression or Linear Regression, depending on the target variable used). The users can tune hyperparameters, change the train/test split, and simulate multiple times. There is no coding experience required, and all machine learning topics are explained in the app. Click on the title to go directly to the repo and learn more.
 
+The app is linked here (**[Live ML App](https://lucasdee-mlapp.streamlit.app)**), and more information about it is in the section below.
+
+## App Description
+The app has these features:
+- Accepts a CSV dataset uploaded by the user
+- Supports Linear Regression (for continuous predictor variables) and Logistic Regression (for binary classification predictor variables)
+- Includes hyperparameters that are all easily adjustable: regularization strength (α for Ridge, C for Logistic), penalty type (L1/L2), train/test split 
+- Provides evaluation metrics and visualizations specific to each model (R², MSE/RMSE, MAE for regression and Accuracy, Precision, Recall, F1-score, AUC-ROC, Confusion Matrix, and ROC Curve for classification) to illustrate the models' capabilities
+- Evaluation metrics and visualizations update automatically as the hyperparameters are changed, allowing the user to more easily experiment and see the impact of the hyperparameters
+- Included guides for how to select which model and how to interpret the metrics
+
+## Motivation
+The motivation for this project was to reinforce what I've learned about supervised machine learning and get more experience with Streamlit. Not only did I have to code the app and make sure everything worked properly, but I also had to make it easily navigable to any user. This project forced me to understand the communication side of data science much better and required a deeper understanding of what I was actually doing when I was writing the code and why, all while keeping my code easy to follow. In that way, I think it adds to my overall portfolio by showcasing my **technical ability** with the app design and model building, as well as my **storytelling ability** with an engaging, easy-to-follow website.
+
+**Key skills:** Python (scikit-learn, pandas, matplotlib, seaborn), Streamlit App design, Supervised Machine Learning (Logistic Regression and Linear Regression), Model Fitting and Evaluation
