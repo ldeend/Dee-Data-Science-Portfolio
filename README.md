@@ -30,3 +30,10 @@ The motivation for this project is to build, refine, and showcase my data scienc
 - cleaning and reshaping messy datasets 
 - using pandas for dataset manipulation and aggregation 
 - utilizing matplotlib to create professional and illustrative visualizations
+
+## [Streamlit Supervised Machine Learning App](https://github.com/ldeend/Dee-Data-Science-Portfolio/blob/main/MLStreamlitApp)
+
+### Project Overview
+
+**[Live ML App](https://lucasdee-mlapp.streamlit.app)** 
+
