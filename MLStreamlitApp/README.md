@@ -65,6 +65,8 @@ For these example screenshots, I used the men's college basketball data from 201
 <img width="985" height="472" alt="Screenshot 2026-04-22 at 8 06 17 PM" src="https://github.com/user-attachments/assets/d50bf049-9798-4fc1-923c-7ea0cb0a8466" />
 
 **Example Evaluation Metrics Panel:**
+<img width="1049" height="566" alt="Screenshot 2026-04-22 at 8 22 17 PM" src="https://github.com/user-attachments/assets/2e7ec5fc-a466-405a-a51b-fa5fa8902363" />
+
 
 **Example Performance Visualization:**
 <img width="1460" height="573" alt="image" src="https://github.com/user-attachments/assets/41ae646b-c8c6-4b1b-ad9c-f43171d80a21" />
