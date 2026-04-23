@@ -211,12 +211,11 @@ with st.spinner("Training the model"):
 
         X_train, X_test, y_train, y_test = train_test_split(
             X, y,
-            test_size=float(test_size),
-            random_state=int(random_state),
-            stratify=(y if model_name == "Logistic Regression" else None),
-        )
+            test_size = float(test_size),
+            random_state = int(random_state),
+            stratify=(y if model_name == "Logistic Regression" else None))
 
-        # Scale features — important for regularized models
+        # Scale features so the regularized models can work properly
         scaler = StandardScaler()
         X_train = scaler.fit_transform(X_train)
         X_test  = scaler.transform(X_test)
