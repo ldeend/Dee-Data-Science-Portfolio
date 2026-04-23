@@ -7,30 +7,32 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OrdinalEncoder
 from sklearn.linear_model import Ridge, Lasso, LogisticRegression
-from sklearn.metrics import (
-    accuracy_score, precision_score, recall_score,
+from sklearn.metrics import (accuracy_score, precision_score, recall_score,
     f1_score, roc_auc_score, confusion_matrix,
     classification_report, roc_curve,
-    mean_squared_error, mean_absolute_error, r2_score,
-)
+    mean_squared_error, mean_absolute_error, r2_score)
 
-# ── Page setup ────────────────────────────────────────────────────────────────
+
+## PAGE SET UP
+
 st.set_page_config(page_title="Supervised Machine Learning Tool", layout="wide")
 
 st.title("Supervised Machine Learning Tool")
-st.markdown(
-    "Upload a CSV dataset, choose a model, and tune hyperparameters. "
-    "Results update automatically as you change any setting."
-)
+st.markdown("Upload a dataset, experiment with hyperparameters, and observe how these affect model training and performance.")
+
 
 # ── Helper ────────────────────────────────────────────────────────────────────
 def is_continuous(series):
     """A numeric column with more than 10 unique values is treated as continuous."""
     return pd.api.types.is_numeric_dtype(series) and series.nunique() > 10
 
-# ── Sidebar ───────────────────────────────────────────────────────────────────
+
+
+## SIDEBAR
+
 with st.sidebar:
     st.header("1 · Dataset")
+    
     uploaded = st.file_uploader("Upload a CSV file", type="csv")
 
     df = None
@@ -74,43 +76,48 @@ with st.sidebar:
         test_size = st.slider("Test set size", 0.1, 0.5, 0.2, 0.05,
             help="Fraction of data held out for evaluation. 0.2 = 20% test, 80% train.")
 
+
+
         model_params: dict = {}
 
         if model_name == "Linear Regression":
+            
             model_params["alpha"] = st.slider(
                 "Regularization strength (α)",
-                0.0, 10.0, 1.0, 0.1,
-                help="Penalizes large coefficients to reduce overfitting. α = 0 is plain OLS; higher values shrink coefficients more aggressively.",
-            )
+                0.0, 10.0, 1.0, 0.01,
+                help = "α penalizes larger coefficients, reducing overfitting. The higher the α, the stronger the shrinkage. α = 0 is regular OLS.")
+            
             model_params["penalty"] = st.selectbox(
                 "Penalty type",
-                ["l2", "l1"],
-                help="L2 (Ridge): shrinks all coefficients toward zero.\nL1 (Lasso): can zero out coefficients entirely, acting as feature selection.",
-            )
+                ["L2", "L1"],
+                help = "L2 (Ridge): shrinks coefficients to zero.\nL1 (Lasso): zeros out coefficients entirely for accuracy and interpretability.")
 
         elif model_name == "Logistic Regression":
+            
             model_params["C"] = st.slider(
-                "C — inverse regularization strength",
+                "Inverse regularization strength (C)",
                 0.01, 10.0, 1.0, 0.01,
-                help="Smaller C = stronger regularization (simpler model). Larger C = less regularization (model fits training data more closely).",
-            )
+                help = "Balances keeping coefficients small and fitting training test data.")
+            
             model_params["penalty"] = st.selectbox(
                 "Penalty type",
-                ["l2", "l1"],
-                help="L2 (Ridge): shrinks all coefficients toward zero.\nL1 (Lasso): can zero out coefficients entirely, acting as feature selection.",
-            )
-            # liblinear supports both l1 and l2 and works well on small-to-medium datasets
+                ["L2", "L1"],
+                help = "L2 (Ridge): shrinks coefficients to zero.\nL1 (Lasso): zeros out coefficients entirely for accuracy and interpretability.")
+            
+            # liblinear supports both L1 and L2 and works well on small-to-medium datasets
             model_params["solver"] = "liblinear"
             model_params["max_iter"] = 1000
             model_params["random_state"] = int(random_state)
 
-# ── Main panel ────────────────────────────────────────────────────────────────
+
+
+## MAIN PANEL
 if df is None:
-    st.info("👈 Upload a CSV file from the sidebar to get started.")
+    st.info("Upload a dataset to perform analysis.")
     st.stop()
 
 # Dataset preview
-with st.expander("📋 Dataset Preview", expanded=True):
+with st.expander("Quick Dataset Preview", expanded=True):
     col_left, col_right = st.columns([1, 2])
     with col_left:
 
@@ -121,36 +128,39 @@ with st.expander("📋 Dataset Preview", expanded=True):
     with col_right:
         st.markdown("**First 10 rows:**")
         st.dataframe(df.head(10), use_container_width=True)
-    st.markdown("**Descriptive statistics:**")
+    st.markdown("**Descriptive Statistics:**")
     st.dataframe(df.describe(), use_container_width=True)
 
 if not feature_cols:
-    st.warning("Please select at least one feature column from the sidebar.")
+    st.warning("Select at least one feature column from the sidebar.")
     st.stop()
 
-# ── Compatibility check (shown before training, not just on error) ────────────
+
+## MODEL MATCHING TARGET VERIFICATION
 target_is_continuous = is_continuous(df[target_col])
 
 if model_name == "Linear Regression" and not target_is_continuous:
     st.error(
-        f"**Model mismatch:** '{target_col}' appears to be categorical "
+        f"**Improper model** '{target_col}' is not numerical."
         f"({df[target_col].nunique()} unique values). "
         "**Linear Regression requires a continuous numeric target.** "
-        "Switch to Logistic Regression or choose a different target column."
-    )
+        "Switch to Logistic Regression if binary or choose a different target column.")
     st.stop()
 
 if model_name == "Logistic Regression" and target_is_continuous:
     st.error(
-        f"**Model mismatch:** '{target_col}' appears to be continuous "
+        f"**Model mismatch:** '{target_col}' is not binary."
         f"({df[target_col].nunique()} unique values). "
         "**Logistic Regression requires a binary categorical target.** "
-        "Switch to Linear Regression or choose a different target column."
-    )
+        "Switch to Linear Regression if continuous numerical or choose a different target column.")
     st.stop()
 
-# ── Auto-training (runs on every widget change) ───────────────────────────────
-with st.spinner("Training model…"):
+
+## ADAPTIVE TRAINING
+
+
+with st.spinner("Training the model"):
+    
     try:
         working = df[feature_cols + [target_col]].copy()
 
@@ -187,11 +197,13 @@ with st.spinner("Training model…"):
         scaler = StandardScaler()
         X_train = scaler.fit_transform(X_train)
         X_test  = scaler.transform(X_test)
+        
 
-        # ── LINEAR REGRESSION ─────────────────────────────────────────────────
+        ## LINEAR REGRESSION SECTION
+        
         if model_name == "Linear Regression":
-            penalty = model_params.pop("penalty")  # Ridge/Lasso don't accept a penalty arg
-            LinearModel = Lasso if penalty == "l1" else Ridge
+            penalty = model_params.pop("penalty")  # Ridge = L2, LASSO = L1
+            LinearModel = Lasso if penalty == "L1" else Ridge
             model = LinearModel(**model_params)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
@@ -203,13 +215,15 @@ with st.spinner("Training model…"):
 
             st.subheader("Model Performance: Linear Regression")
 
-            c1, c2, c3, c4 = st.columns(4)
-            c1.metric("R²", f"{r2:.4f}")
-            c2.metric("MSE", f"{mse:.4f}")
-            c3.metric("RMSE", f"{rmse:.4f}")
-            c4.metric("MAE", f"{mae:.4f}")
+            col1, col2, col3, col4 = st.columns(4)
+            col1.metric("R²", f"{r2:.5f}")
+            col2.metric("MSE", f"{mse:.5f}")
+            col3.metric("RMSE", f"{rmse:.5f}")
+            col4.metric("MAE", f"{mae:.5f}")
 
-            # ── What does a good score look like? ─────────────────────────────
+
+            # WHAT DOES A GOOD SCORE LOOK LIKE?
+            
             with st.expander("How do I interpret these metrics?"):
                 st.markdown("""
 | Metric | What it measures |
@@ -218,14 +232,14 @@ with st.spinner("Training model…"):
 | **MSE** | Mean squared error of predictions. Larger errors are penalized more. The lower the score, the better. Compare this across different hyperparameters |
 | **RMSE** | Square root of MSE. Same units as the target, easier to interpret. Ideally, small compared to the range of the predicted variable.|
 | **MAE** | Average absolute error of predictions. Less sensitive to outliers and large errors than RMSE. |
-    **Adjust hyperparameter α to improve R².**
-            """)
+    **Adjust hyperparameter α to improve R².**""")
 
-            tab1, tab2, tab3 = st.tabs(
+
+            table1, table2, table3 = st.tabs(
                 ["Predicted vs Actual", "Residuals", "Feature Coefficients"]
             )
 
-            with tab1:
+            with table1:
                 fig, ax = plt.subplots(figsize=(5, 4))
                 ax.scatter(y_test, y_pred, alpha=0.6, color="#185FA5", edgecolors="white", s=50)
                 lims = [min(y_test.min(), y_pred.min()), max(y_test.max(), y_pred.max())]
@@ -236,41 +250,43 @@ with st.spinner("Training model…"):
                 ax.legend()
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Points close to the dashed line indicate accurate predictions. Scatter around the line shows prediction error.")
+                st.caption("Points closer to the dashed line indicate accurate predictions, and distance between points and line shows prediction error (residuals).")
 
-            with tab2:
+            with table2:
                 residuals = y_test - y_pred
                 fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-                axes[0].scatter(y_pred, residuals, alpha=0.6, color="#E05A3A", edgecolors="white", s=50)
+                axes[0].scatter(y_pred, residuals, alpha=0.6, color="blue", edgecolors="white", s=50)
                 axes[0].axhline(0, color="black", lw=1.5, linestyle="--")
                 axes[0].set_xlabel("Predicted values")
                 axes[0].set_ylabel("Residuals")
                 axes[0].set_title("Residuals vs Fitted")
-                axes[1].hist(residuals, bins=20, color="#534AB7", edgecolor="white")
+                axes[1].hist(residuals, bins=20, color="purple", edgecolor="white")
                 axes[1].set_xlabel("Residual")
                 axes[1].set_ylabel("Frequency")
                 axes[1].set_title("Residual Distribution")
                 plt.tight_layout()
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Ideally, residuals are randomly scattered around zero (left) and approximately bell-shaped (right). Patterns suggest the model is missing something.")
+                st.caption("In an ideal model, the residuals are randomly scattered around zero and in an approximate bell curve distribution.")
 
-            with tab3:
+            with table3:
                 coef_df = pd.DataFrame({
                     "Feature": feature_cols,
                     "Coefficient": model.coef_
                 }).sort_values("Coefficient", key=abs, ascending=True)
                 fig, ax = plt.subplots(figsize=(5, max(3, len(feature_cols) * 0.35)))
-                colors = ["#E05A3A" if c < 0 else "#1D9E75" for c in coef_df["Coefficient"]]
+                colors = ["red" if c < 0 else "gree" for c in coef_df["Coefficient"]]
                 ax.barh(coef_df["Feature"], coef_df["Coefficient"], color=colors)
                 ax.axvline(0, color="black", lw=1)
                 ax.set_xlabel("Coefficient value")
                 ax.set_title("Feature Coefficients")
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Green bars = positive relationship with the target. Red bars = negative relationship. Longer bars = stronger influence. Features are scaled, so coefficients are directly comparable.")
+                st.caption("Green bars show a positive relationship with the target, red bars show a negative relationship. Longer bars mean larger coefficients in magnitude.")
 
-        # ── LOGISTIC REGRESSION ───────────────────────────────────────────────
+        ## LOGISTIC REGRESSION SECTION
+        
+        
         elif model_name == "Logistic Regression":
             model = LogisticRegression(**model_params)
             model.fit(X_train, y_train)
@@ -294,34 +310,34 @@ with st.spinner("Training model…"):
                    if is_binary
                    else roc_auc_score(y_test, y_prob, multi_class="ovr", average="weighted"))
 
-            st.subheader("Model Performance — Logistic Regression")
+            st.subheader("Model Performance: Logistic Regression")
 
-            c1, c2, c3, c4, c5 = st.columns(5)
-            c1.metric("Accuracy",  f"{acc:.4f}")
-            c2.metric("Precision", f"{prec:.4f}")
-            c3.metric("Recall",    f"{rec:.4f}")
-            c4.metric("F1 Score",  f"{f1:.4f}")
-            c5.metric("AUC-ROC",   f"{auc:.4f}")
+            col1, col2, col3, col4, col5 = st.columns(5)
+            col1.metric("Accuracy",  f"{acc:.4f}")
+            col2.metric("Precision", f"{prec:.4f}")
+            col3.metric("Recall",    f"{rec:.4f}")
+            col4.metric("F1 Score",  f"{f1:.4f}")
+            col5.metric("AUC-ROC",   f"{auc:.4f}")
 
-            # ── What does a good score look like? ─────────────────────────────
-            with st.expander("ℹ️ How to interpret these metrics"):
+
+
+            # WHAT DOES A GOOD SCORE LOOK LIKE?
+            with st.expander("How to interpret these metrics"):
                 st.markdown("""
-| Metric | What it measures | Good range |
-|--------|-----------------|------------|
-| **Accuracy** | Percentage of all predictions that are correct. Can be misleading on imbalanced datasets. | > 0.85 is generally strong |
-| **Precision** | Of all predicted positives, how many were actually positive? High precision = few false alarms. | > 0.80 is good |
-| **Recall** | Of all actual positives, how many did the model catch? High recall = few missed cases. | > 0.80 is good |
-| **F1 Score** | Harmonic mean of Precision and Recall. Best single metric when classes are imbalanced. | > 0.80 is good; > 0.90 is excellent |
-| **AUC-ROC** | Area under the ROC curve. Measures how well the model separates classes regardless of threshold. | 0.5 = random guessing; > 0.80 = good; > 0.90 = excellent |
+| Metric | What it measures | 
+|--------|-----------------|
+| **Accuracy** | Percentage of all predictions that are correct. Can be misleading on imbalanced datasets. 0.80+ is good|
+| **Precision** | Of all predicted positives, how many were actually positive? High precision = few false alarms. 0.80+ is good |
+| **Recall** | Of all actual positives, how many did the model catch? High recall = few missed cases. 0.80+ is good |
+| **F1 Score** | Harmonic mean of Precision and Recall. Best single metric when classes are imbalanced. 0.80+ is good|
+| **AUC-ROC** | Area under the ROC curve. Measures how well the model separates classes regardless of threshold. 0.5 means no better than random guessing, 0.80+ is good|
 
-**Tip:** If Precision and Recall are very different, consider whether false positives or false negatives are more costly for your problem. Adjust C to find the right balance.
-                """)
+        **Adjust C to find the right balance out the differing effects of false negatives and false positives.**""")
 
-            tab1, tab2, tab3, tab4 = st.tabs(
-                ["Confusion Matrix", "ROC Curve", "Feature Coefficients", "Classification Report"]
-            )
+            table1, table2, table3, tab4 = st.tabs(
+                ["Confusion Matrix", "ROC Curve", "Feature Coefficients", "Classification Report"])
 
-            with tab1:
+            with table1:
                 cm = confusion_matrix(y_test, y_pred)
                 fig, ax = plt.subplots(figsize=(5, 4))
                 sns.heatmap(
@@ -335,7 +351,7 @@ with st.spinner("Training model…"):
                 plt.close(fig)
                 st.caption("Diagonal cells (top-left to bottom-right) are correct predictions. Off-diagonal cells are errors — top-right = false positives, bottom-left = false negatives.")
 
-            with tab2:
+            with table2:
                 fig, ax = plt.subplots(figsize=(5, 4))
                 if is_binary:
                     fpr, tpr, _ = roc_curve(y_test, y_prob[:, 1])
@@ -353,7 +369,7 @@ with st.spinner("Training model…"):
                 plt.close(fig)
                 st.caption("The curve shows the trade-off between true and false positive rates at different classification thresholds. A curve hugging the top-left corner is ideal. The dashed line represents random guessing (AUC = 0.5).")
 
-            with tab3:
+            with table3:
                 coefs = (np.abs(model.coef_).mean(axis=0)
                          if model.coef_.ndim > 1
                          else model.coef_[0])
@@ -375,13 +391,15 @@ with st.spinner("Training model…"):
                 report = classification_report(
                     y_test, y_pred,
                     target_names=display_labels,
-                    output_dict=True, zero_division=0
-                )
+                    output_dict=True, zero_division=0)
+                
                 st.dataframe(
                     pd.DataFrame(report).transpose().style.format(precision=3),
-                    use_container_width=True,
-                )
+                    use_container_width=True)
+                
                 st.caption("Per-class breakdown of Precision, Recall, and F1. 'Support' is the number of true instances for each class in the test set.")
+
+
 
     except Exception as e:
         st.error(f"Training failed: {e}")
