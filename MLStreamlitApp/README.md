@@ -45,6 +45,67 @@ streamlit run mlapp.py
 This will launch the app in your browser at the IP `http://localhost:8501/`.
 
 
+
+## App Features
+
+### Dataset Upload and View
+- Upload a CSV file through the Upload/Drop on the sidebar
+- In the main panel, a preview of the first 10 rows, column names and types, and descriptive statistics
+- Rows with missing values are dropped before the model is trained on it, and the app states how many were removed
+- Text columns are encoded automatically using ordinal encoding, and everything is scaled properly (for regularization)
+
+### Model Selection
+- Select one predictor variable and as many feature variables 
+- Choose between Linear Regression for continuous predictor variables and Logistic Regression for binary predictor variables
+- The app will notify if the model choice doesn't match the target variable
+- You can choose a value for the hyperparameters, type of regularization, train/test split (though it should stay around 80% train), and try different random seeds
+
+### Output
+- Each model outputs variance evaluation metrics and visualizations to understand the model's performance
+- For each model output, there is a dropdown panel titled **"How to interpret these metrics"** that explains what each metric is and what a good value is for each
+- Along with each visualization is a short description
+- Every time an aspect of the model is changed (tweaking a hyperparameter, adding a feature, etc.), it re-renders the model automatically, allowing for quick comparison and tuning 
+
+
+## Breakdown by Model
+
+### Linear Regression
+
+| Hyperparameter | What it does |
+|----------------|-------------|
+| **α** | Penalizes larger coefficients, reducing overfitting. The higher the α, the stronger the shrinkage. α = 0 is regular OLS. |
+| **Test split size** | Fraction of data held out for testing after training the model on the other part of the dataset. |
+| **Random seed** | Different seeds have different splits, so can change it to test result stability. |
+
+Can choose L2 Regularization (Ridge Regression) or L1 Regularization (LASSO)
+
+**Output metrics:** R², MSE, RMSE, MAE  
+- R² is the main one, 0.7+ is good and 0.9+ is amazing
+- RMSE and MAE should be small relative to the range of your target variable
+
+**Visualizations:** Predicted vs Actual scatter plot, Residuals vs Fitted, Residual distribution, Feature Coefficients Visualized
+- Predicted vs Actual: Points closer to the dashed line indicate accurate predictions, and distance between points and line shows prediction error (residuals).
+- Residual Analysis: In an ideal model, the residuals are randomly scattered around zero and in an approximate bell curve distribution.
+
+### Logistic Regression
+
+| Hyperparameter | What it does |
+|----------------|-------------|
+| **C** | Inverse of regularization strength. Balances keeping coefficients small and fitting training data. Larger c fits the training data more. |
+| **Penalty** | L2 (Ridge): shrinks coefficients to zero.\nL1 (Lasso): zeros out coefficients entirely for accuracy and interpretability. |
+| **Test set size** | Fraction of data held out for testing after training the model on the other part of the dataset. |
+| **Random seed** | Different seeds have different splits, so can change it to test result stability. |
+
+**Output metrics:** Accuracy, Precision, Recall, F1 Score, AUC-ROC  
+- Accuracy: Percentage of all predictions that are correct. Can be misleading on imbalanced datasets. 0.80+ is good
+- AUC-ROC: Area under the ROC curve. Measures how well the model separates classes regardless of threshold. 0.5 means no better than choosing at random. 0.80+ is good.
+- F1 Score: Harmonic mean of Precision and Recall. Best single metric when classes are imbalanced. 0.80+ is good. One of the most relied on classification metrics.
+  
+**Visualizations:** Confusion Matrix, ROC Curve, Feature Coefficients Visualize
+- Confusion Matrix: Top left are true negatives and bottom right are true positives, these are correct predictions. Top right are false positives and bottom left are false negatives, these are the errors.
+- ROC Curve: Shows the tradeoff between true positives and false positive rates. A convex curve bending towards the top left corner is ideal. A straight, linear line represents an AUC of 0.5
+
+
 ## References
 
 For more information or clarification about some of the machine learning topics used, here are the references I used:
