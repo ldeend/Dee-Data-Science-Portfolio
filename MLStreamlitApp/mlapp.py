@@ -113,10 +113,11 @@ if df is None:
 with st.expander("📋 Dataset Preview", expanded=True):
     col_left, col_right = st.columns([1, 2])
     with col_left:
-        st.markdown(f"**Rows:** {df.shape[0]}  \n**Columns:** {df.shape[1]}")
+
         st.markdown("**Column types:**")
         st.dataframe(df.dtypes.rename("type").reset_index().rename(columns={"index": "column"}),
                      use_container_width=True, hide_index=True)
+        st.markdown(f"**Rows:** {df.shape[0]}  \n**Columns:** {df.shape[1]}")
     with col_right:
         st.markdown("**First 10 rows:**")
         st.dataframe(df.head(10), use_container_width=True)
