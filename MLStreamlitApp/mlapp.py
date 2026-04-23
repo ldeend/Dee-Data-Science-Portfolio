@@ -212,9 +212,9 @@ with st.spinner("Training model…"):
             # ── What does a good score look like? ─────────────────────────────
             with st.expander("How do I interpret these metrics?"):
                 st.markdown("""
-| Metric | What it measures | What's a good score? |
-|--------|-----------------|------------|
-| **R²** | Proportion of variance in the target explained by the model. 1.0 = perfect, 0 = no better than guessing the mean. 0.7+ is good, 0.9+ is excellent |
+| Metric | What it measures |
+|--------|-----------------|
+| **R²** | The proportion of variance in the prediction variable explained by the model. 1.0 means a perfect model, 0 means no better than always predicting the sample mean. 0.7+ is good, 0.9+ is excellent |
 | **MSE** | Mean squared error of predictions. Larger errors are penalized more. The lower the score, the better. Compare this across different hyperparameters |
 | **RMSE** | Square root of MSE. Same units as the target, easier to interpret. Ideally, small compared to the range of the predicted variable.|
 | **MAE** | Average absolute error of predictions. Less sensitive to outliers and large errors than RMSE. |
