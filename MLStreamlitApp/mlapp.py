@@ -201,7 +201,7 @@ with st.spinner("Training model…"):
             rmse = np.sqrt(mse)
             mae  = mean_absolute_error(y_test, y_pred)
 
-            st.subheader("Model Performance — Linear Regression")
+            st.subheader("Model Performance: Linear Regression")
 
             c1, c2, c3, c4 = st.columns(4)
             c1.metric("R²", f"{r2:.4f}")
@@ -210,17 +210,15 @@ with st.spinner("Training model…"):
             c4.metric("MAE", f"{mae:.4f}")
 
             # ── What does a good score look like? ─────────────────────────────
-            with st.expander("ℹ️ How to interpret these metrics"):
+            with st.expander("How do I interpret these metrics?"):
                 st.markdown("""
-| Metric | What it measures | Good range |
+| Metric | What it measures | What's a good score? |
 |--------|-----------------|------------|
-| **R²** | Proportion of variance in the target explained by the model. 1.0 = perfect, 0 = no better than guessing the mean. | > 0.7 is solid; > 0.9 is excellent |
-| **MSE** | Average squared prediction error. Larger errors are penalized more heavily. Lower is better. | Depends on target scale — compare across runs |
-| **RMSE** | Square root of MSE. Same units as the target, easier to interpret. | Should be small relative to the range of your target |
-| **MAE** | Average absolute prediction error. Less sensitive to outliers than RMSE. Lower is better. | Should be small relative to the range of your target |
+| **R²** | Proportion of variance in the target explained by the model. 1.0 = perfect, 0 = no better than guessing the mean. 0.7+ is good, 0.9+ is excellent |
+| **MSE** | Mean squared error of predictions. Larger errors are penalized more. The lower the score, the better. Compare this across different hyperparameters |
+| **RMSE** | Square root of MSE. Same units as the target, easier to interpret. Ideally, small compared to the range of the predicted variable.|
+| **MAE** | Average absolute error of predictions. Less sensitive to outliers and large errors than RMSE. |
 
-**Tip:** Try adjusting α. If R² improves on the test set as α increases, your model was overfitting.
-                """)
 
             tab1, tab2, tab3 = st.tabs(
                 ["Predicted vs Actual", "Residuals", "Feature Coefficients"]
