@@ -92,7 +92,7 @@ Can choose L2 Regularization (Ridge Regression) or L1 Regularization (LASSO)
 | Hyperparameter | What it does |
 |----------------|-------------|
 | **C** | Inverse of regularization strength. Balances keeping coefficients small and fitting training data. Larger c fits the training data more. |
-| **Penalty** | L2 (Ridge): shrinks coefficients to zero.\nL1 (Lasso): zeros out coefficients entirely for accuracy and interpretability. |
+| **Penalty** | L2 (Ridge): shrinks coefficients to zero. L1 (Lasso): zeros out coefficients entirely for accuracy and interpretability. |
 | **Test set size** | Fraction of data held out for testing after training the model on the other part of the dataset. |
 | **Random seed** | Different seeds have different splits, so can change it to test result stability. |
 
