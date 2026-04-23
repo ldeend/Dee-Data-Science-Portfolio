@@ -152,27 +152,17 @@ with st.expander("Quick Dataset Preview", expanded = True):
 
 # Verify that the model matches the data type of the target variable (or else model will not work)
 
-    # Make all continuous (for later)
-def is_continuous(series):
-    """A numeric column with more than 10 unique values is treated as continuous."""
-    return pd.api.types.is_numeric_dtype(series) and series.nunique() > 10
-
-target_is_continuous = is_continuous(df[target_col])
-
-if model_name == "Linear Regression" and not target_is_continuous:
-    st.error(
-        f"**Improper model** '{target_col}' is not numerical."
-        f"({df[target_col].nunique()} unique values). "
-        "**Linear Regression requires a continuous numeric target.** "
-        "Switch to Logistic Regression if binary or choose a different target column.")
+def is_numeric(series):
+    return pd.api.types.is_numeric_dtype(series)
+if model_name == "Linear Regression" and not is_numeric(df[target_col]):
+    st.error(f"**'{target_col}'** is not numeric. Linear Regression requires a numeric target. Switch to Logistic Regression or choose a different target column.")
     st.stop()
 
-if model_name == "Logistic Regression" and target_is_continuous:
-    st.error(
-        f"**Model mismatch:** '{target_col}' is not binary."
-        f"({df[target_col].nunique()} unique values). "
-        "**Logistic Regression requires a binary categorical target.** "
-        "Switch to Linear Regression if continuous numerical or choose a different target column.")
+
+def is_binary(series):
+    return series.nunique() == 2
+if model_name == "Logistic Regression" and not is_binary(df[target_col]):
+    st.error(f"**'{target_col}'** is not binary ({df[target_col].nunique()} unique values). Logistic Regression requires a binary target. Switch to Linear Regression or choose a different target column.")
     st.stop()
 
 
