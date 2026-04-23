@@ -172,7 +172,9 @@ if model_name == "Logistic Regression" and not is_binary(df[target_col]):
 with st.spinner("Training the model"):
     
     try:
-        working = df[feature_cols + [target_col]].copy()
+
+        # All the columns/variables used
+        all_var = df[feature_cols + [target_col]].copy()
 
         # For logistic regression, save original label names before any encoding for easier interpretation at the visualizations
         # This makes it so the confusion matrix says "Female" and "Male" instead of 0 and 1, for example
@@ -180,25 +182,27 @@ with st.spinner("Training the model"):
         original_target_labels = None
         if model_name == "Logistic Regression":
             le = LabelEncoder()
-            le.fit(working[target_col].astype(str))
+            le.fit(all_var[target_col].astype(str))
             original_target_labels = le.classes_ 
-            working[target_col] = le.transform(working[target_col].astype(str))
+            all_var[target_col] = le.transform(all_var[target_col].astype(str))
+
+        # Encode any remaining text columns in features
+        for col in all_var[feature_cols].select_dtypes(include=["object", "category"]).columns:
+            all_var[col] = OrdinalEncoder().fit_transform(all_var[[col]])
 
         
-        # Encode any remaining text columns in features
-        for col in working[feature_cols].select_dtypes(include=["object", "category"]).columns:
-            working[col] = OrdinalEncoder().fit_transform(working[[col]])
+        # Drop rows with missing values so the model doesn't run into issues. Missing data is a different machine learning problem.
+        old_len = len(all_var)
+        all_var = all_var.dropna()
+        num_dropped = old_len - len(all_var)
+        if num_dropped == 1:
+            st.caption(f"1 row with missing values was dropped before training.")
+        elif num_dropped > 1:
+            st.caption(f"{dropped} rows with missing values were dropped before training.")
 
-        # Drop rows with missing values
-        before = len(working)
-        working = working.dropna()
-        dropped = before - len(working)
-        if dropped > 0:
-            st.warning(f"{dropped} row(s) with missing values were dropped before training.")
-
-        X = working[feature_cols].values
-        y = working[target_col].values
-
+            # Split the dataset into the training set and testing set based on the new, cleaned dataset        
+        X = all_var[feature_cols].values
+        y = all_var[target_col].values
         X_train, X_test, y_train, y_test = train_test_split(
             X, y,
             test_size = float(test_size),
