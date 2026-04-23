@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OrdinalEncoder
 from sklearn.linear_model import Ridge, Lasso, LogisticRegression
@@ -13,27 +12,20 @@ from sklearn.metrics import (accuracy_score, precision_score, recall_score,
     mean_squared_error, mean_absolute_error, r2_score)
 
 
+
 ## PAGE SET UP
 
-st.set_page_config(page_title="Supervised Machine Learning Tool", layout="wide")
-
+st.set_page_config(page_title = "Supervised Machine Learning Tool", layout = "wide")
 st.title("Supervised Machine Learning Tool")
 st.markdown("Upload a dataset, experiment with hyperparameters, and observe how these affect model training and performance.")
-
-
-## Make all continuous for later
-def is_continuous(series):
-    """A numeric column with more than 10 unique values is treated as continuous."""
-    return pd.api.types.is_numeric_dtype(series) and series.nunique() > 10
-
 
 
 ## SIDEBAR
 
 with st.sidebar:
-    st.header("1 · Dataset")
+    st.header("Upload Dataset")
     
-    uploaded = st.file_uploader("Upload a CSV file", type="csv")
+    uploaded = st.file_uploader("Upload a CSV file", type = "csv")
 
     df = None
     if uploaded:
@@ -44,7 +36,7 @@ with st.sidebar:
 
     if df is not None:
         st.divider()
-        st.header("2 · Choose Variables")
+        st.header("Choose Variables")
         target_col = st.selectbox(
             "Target variable (what you want to predict)",
             df.columns.tolist(),
@@ -116,26 +108,36 @@ if df is None:
     st.stop()
 
 # Dataset preview
-with st.expander("Quick Dataset Preview", expanded=True):
-    col_left, col_right = st.columns([1, 2])
-    with col_left:
-
-        st.markdown("**Column types:**")
+with st.expander("Quick Dataset Preview", expanded = True):
+    left_col, right_col = st.columns([1, 2])
+    
+    with left_col:
+            # Left column will show the column names and their data type
+        st.markdown("**Column Names:**")
         st.dataframe(df.dtypes.rename("type").reset_index().rename(columns={"index": "column"}),
-                     use_container_width=True, hide_index=True)
+                     use_container_width = True, hide_index = True)
+        
+            #Underneath, still in the left column, are the dimensions of the dataset
         st.markdown(f"**Rows:** {df.shape[0]}  \n**Columns:** {df.shape[1]}")
-    with col_right:
-        st.markdown("**First 10 rows:**")
-        st.dataframe(df.head(10), use_container_width=True)
+
+    
+    with right_col:
+            # Right column will generate the first 12 rows
+        st.markdown("**First 12 rows:**")
+        st.dataframe(df.head(12), use_container_width = True)
+
+        # Under both columns will be the descriptive statistics
     st.markdown("**Descriptive Statistics:**")
-    st.dataframe(df.describe(), use_container_width=True)
-
-if not feature_cols:
-    st.warning("Select at least one feature column from the sidebar.")
-    st.stop()
-
+    st.dataframe(df.describe(), use_container_width = True)
+    
 
 ## MODEL MATCHING TARGET VERIFICATION
+
+    # Make all continuous (for later)
+def is_continuous(series):
+    """A numeric column with more than 10 unique values is treated as continuous."""
+    return pd.api.types.is_numeric_dtype(series) and series.nunique() > 10
+
 target_is_continuous = is_continuous(df[target_col])
 
 if model_name == "Linear Regression" and not target_is_continuous:
