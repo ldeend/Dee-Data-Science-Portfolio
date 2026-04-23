@@ -55,8 +55,8 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 - Text columns are encoded automatically using ordinal encoding, and everything is scaled properly (for regularization)
 
 ### Model Selection
-- Select one predictor variable and as many feature variables 
-- Choose between Linear Regression for continuous predictor variables and Logistic Regression for binary predictor variables
+- Select one target (Y) variable and as many feature (X) variables 
+- Choose between Linear Regression for continuous target variables and Logistic Regression for binary target variables
 - The app will notify if the model choice doesn't match the target variable
 - You can choose a value for the hyperparameters, type of regularization, train/test split (though it should stay around 80% train), and try different random seeds
 
