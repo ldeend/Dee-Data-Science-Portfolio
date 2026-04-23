@@ -21,7 +21,7 @@ st.title("Supervised Machine Learning Tool")
 st.markdown("Upload a dataset, experiment with hyperparameters, and observe how these affect model training and performance.")
 
 
-# ── Helper ────────────────────────────────────────────────────────────────────
+## Make all continuous for later
 def is_continuous(series):
     """A numeric column with more than 10 unique values is treated as continuous."""
     return pd.api.types.is_numeric_dtype(series) and series.nunique() > 10
@@ -203,7 +203,7 @@ with st.spinner("Training the model"):
         
         if model_name == "Linear Regression":
             penalty = model_params.pop("penalty")  # Ridge = L2, LASSO = L1
-            LinearModel = Lasso if penalty == "L1" else Ridge
+            LinearModel = Lasso if penalty == "l1" else Ridge
             model = LinearModel(**model_params)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
@@ -288,6 +288,8 @@ with st.spinner("Training the model"):
         
         
         elif model_name == "Logistic Regression":
+            model_params["penalty"] = model_params["penalty"].lower()
+            model = LogisticRegression(**model_params)
             model = LogisticRegression(**model_params)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
@@ -349,7 +351,7 @@ with st.spinner("Training the model"):
                 ax.set_title("Confusion Matrix — Logistic Regression")
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Diagonal cells (top-left to bottom-right) are correct predictions. Off-diagonal cells are errors — top-right = false positives, bottom-left = false negatives.")
+                st.caption("Diagonal cells (top-left to bottom-right) are correct predictions. Off-diagonal cells are errors, top-right are false positives, bottom-left are false negatives.")
 
             with table2:
                 fig, ax = plt.subplots(figsize=(5, 4))
@@ -385,7 +387,7 @@ with st.spinner("Training the model"):
                 ax.set_title("Feature Coefficients")
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Green bars increase the log-odds of the positive class; red bars decrease them. Longer bars indicate stronger influence. Try switching between L1 and L2 penalty — L1 may zero out some bars entirely.")
+                st.caption("Green bars increase the log-odds of the positive class; red bars decrease them. Longer bars indicate stronger influence. Try switching between L1 and L2 penalty, L1 may zero out some bars entirely.")
 
             with tab4:
                 report = classification_report(
