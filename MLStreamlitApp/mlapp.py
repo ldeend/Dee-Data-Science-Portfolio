@@ -218,7 +218,8 @@ with st.spinner("Training model…"):
 | **MSE** | Mean squared error of predictions. Larger errors are penalized more. The lower the score, the better. Compare this across different hyperparameters |
 | **RMSE** | Square root of MSE. Same units as the target, easier to interpret. Ideally, small compared to the range of the predicted variable.|
 | **MAE** | Average absolute error of predictions. Less sensitive to outliers and large errors than RMSE. |
-
+    **Adjust hyperparameter α to improve R².**
+            """)
 
             tab1, tab2, tab3 = st.tabs(
                 ["Predicted vs Actual", "Residuals", "Feature Coefficients"]
