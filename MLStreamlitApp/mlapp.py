@@ -347,16 +347,16 @@ with st.spinner("Training the model"):
                 )
                 ax.set_xlabel("Predicted label")
                 ax.set_ylabel("True label")
-                ax.set_title("Confusion Matrix — Logistic Regression")
+                ax.set_title("Confusion Matrix")
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Diagonal cells (top-left to bottom-right) are correct predictions. Off-diagonal cells are errors, top-right are false positives, bottom-left are false negatives.")
+                st.caption("Top left are true negatives and bottom right are true positives, these are correct predictions. Top right are false positives and bottom left are false negatives, these are the errors.")
 
             with table2:
                 fig, ax = plt.subplots(figsize=(5, 4))
                 if is_binary:
                     fpr, tpr, _ = roc_curve(y_test, y_prob[:, 1])
-                    ax.plot(fpr, tpr, label=f"AUC = {auc:.3f}", color="#185FA5", lw=2)
+                    ax.plot(fpr, tpr, label=f"AUC = {auc:.3f}", color="blue", lw=2)
                 else:
                     for i, (idx, lbl) in enumerate(zip(class_indices, display_labels)):
                         fpr, tpr, _ = roc_curve((y_test == idx).astype(int), y_prob[:, i])
@@ -364,11 +364,11 @@ with st.spinner("Training the model"):
                 ax.plot([0, 1], [0, 1], "k--", lw=1, label="Random classifier")
                 ax.set_xlabel("False Positive Rate")
                 ax.set_ylabel("True Positive Rate")
-                ax.set_title("ROC Curve — Logistic Regression")
+                ax.set_title("ROC Curve")
                 ax.legend(loc="lower right")
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("The curve shows the trade-off between true and false positive rates at different classification thresholds. A curve hugging the top-left corner is ideal. The dashed line represents random guessing (AUC = 0.5).")
+                st.caption("Shows the tradeoff between true positives and false positive rates. A convex curve bending towards the top left corner is ideal. A straight, linear line represents an AUC of 0.5.")
 
             with table3:
                 coefs = (np.abs(model.coef_).mean(axis=0)
@@ -379,7 +379,7 @@ with st.spinner("Training the model"):
                     "Coefficient": coefs,
                 }).sort_values("Coefficient", key=abs, ascending=True)
                 fig, ax = plt.subplots(figsize=(5, max(3, len(feature_cols) * 0.35)))
-                colors = ["#E05A3A" if c < 0 else "#1D9E75" for c in coef_df["Coefficient"]]
+                colors = ["red" if c < 0 else "green" for c in coef_df["Coefficient"]]
                 ax.barh(coef_df["Feature"], coef_df["Coefficient"], color=colors)
                 ax.axvline(0, color="black", lw=1)
                 ax.set_xlabel("Coefficient value")
