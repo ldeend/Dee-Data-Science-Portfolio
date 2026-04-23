@@ -62,10 +62,9 @@ with st.sidebar:
             "Algorithm",
             ["Linear Regression", "Logistic Regression"],
             help=(
-                "Linear Regression → continuous numeric target (e.g. price, score)\n"
-                "Logistic Regression → binary categorical target (e.g. yes/no, win/loss)"
-            ),
-        )
+                "Linear Regression for continuous numeric target (e.g. price, score)\n"
+                "Logistic Regression for binary categorical target (e.g. yes/no, win/loss, gender)"))
+
 
         st.divider()
         st.header("4 · Tune Hyperparameters")
