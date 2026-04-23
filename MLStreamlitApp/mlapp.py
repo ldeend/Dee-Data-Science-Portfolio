@@ -23,33 +23,43 @@ st.markdown("Upload a dataset, experiment with hyperparameters, and observe how 
 ## SIDEBAR
 
 with st.sidebar:
+    
     st.header("Upload Dataset")
     
-    uploaded = st.file_uploader("Upload a CSV file", type = "csv")
+    dataset = st.file_uploader("Upload a CSV file", type = "csv")
 
     df = None
-    if uploaded:
-        df = pd.read_csv(uploaded)
-        st.success(f"Loaded {df.shape[0]} rows × {df.shape[1]} columns")
-    else:
-        st.info("Upload a CSV file to begin.")
 
+        # Ask to upload a CSV file and read it once it is uploaded
+    if dataset:
+        df = pd.read_csv(dataset)
+    else:
+        st.info("Upload a CSV file.")
+
+    
+        # Once the dataset is uploaded, reveal the widgets
     if df is not None:
         st.divider()
         st.header("Choose Variables")
+
+            # Have a select box that allows for ONE variable to be predicted
         target_col = st.selectbox(
             "Target variable (what you want to predict)",
             df.columns.tolist(),
-            index=len(df.columns) - 1,
-        )
+            index = len(df.columns) - 1)
+
+            # Allow picking as many explanatory variables as you want, as long as it isn't the target
+        non_targets = [c for c in df.columns if c != target_col]
         feature_cols = st.multiselect(
-            "Feature variables (inputs to the model)",
-            [c for c in df.columns if c != target_col],
-            default=[c for c in df.columns if c != target_col],
-        )
+            "Feature variables (what you are using to predict)",
+            non_targets)
+
+        
+feature_cols = st.multiselect("Feature variables (what you are using to predict)", non_target, default = non_target)
+        
 
         st.divider()
-        st.header("3 · Choose a Model")
+        st.header("Choose a Model")
         model_name = st.selectbox(
             "Algorithm",
             ["Linear Regression", "Logistic Regression"],
@@ -59,7 +69,7 @@ with st.sidebar:
 
 
         st.divider()
-        st.header("4 · Tune Hyperparameters")
+        st.header("Tune Hyperparameters")
         st.caption("Results update live as you adjust these.")
 
         random_state = st.number_input("Random seed", value=100, step=1,
@@ -131,7 +141,7 @@ with st.expander("Quick Dataset Preview", expanded = True):
     st.dataframe(df.describe(), use_container_width = True)
     
 
-## MODEL MATCHING TARGET VERIFICATION
+# Verify that the model matches the data type of the target variable (or else model will not work)
 
     # Make all continuous (for later)
 def is_continuous(series):
