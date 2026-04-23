@@ -55,8 +55,6 @@ with st.sidebar:
             non_targets)
 
         
-feature_cols = st.multiselect("Feature variables (what you are using to predict)", non_target, default = non_target)
-        
 
         st.divider()
         st.header("Choose a Model")
