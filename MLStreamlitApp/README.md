@@ -45,10 +45,6 @@ streamlit run mlapp.py
 This will launch the app in your browser at the IP `http://localhost:8501/`.
 
 
-## App Features
-
-
-
 ## References
 
 For more information or clarification about some of the machine learning topics used, here are the references I used:
