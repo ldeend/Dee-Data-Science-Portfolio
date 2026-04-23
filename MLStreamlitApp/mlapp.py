@@ -52,32 +52,39 @@ with st.sidebar:
         non_targets = [c for c in df.columns if c != target_col]
         feature_cols = st.multiselect(
             "Feature variables (what you are using to predict)",
-            non_targets)
+                # Default to have a random variable selected so the model works immediately
+            non_targets, default = non_targets[:1])
 
         
 
         st.divider()
         st.header("Choose a Model")
+
+            # Choose from the two models and have a help section so the user knows exactly what model they are picking.
         model_name = st.selectbox(
-            "Algorithm",
+            "Model",
             ["Linear Regression", "Logistic Regression"],
-            help=(
-                "Linear Regression for continuous numeric target (e.g. price, score)\n"
+            help=("Linear Regression for continuous numeric target (e.g. price, score)\n"
                 "Logistic Regression for binary categorical target (e.g. yes/no, win/loss, gender)"))
 
 
         st.divider()
         st.header("Tune Hyperparameters")
-        st.caption("Results update live as you adjust these.")
+        st.caption("Tune for model testing and perfomance.")
 
+            # Since the train test split comes from a random seed, allow the user to change the seed to get different outcomes to test the stability of the model
         random_state = st.number_input("Random seed", value=100, step=1,
             help="Controls the train/test split. Change this to test stability.")
+
+            # Split should be set at 20% and 80% train, but allow the option to change if the user wants
         test_size = st.slider("Test set size", 0.1, 0.5, 0.2, 0.05,
             help="Fraction of data held out for evaluation. 0.2 = 20% test, 80% train.")
 
 
-
+        # Model hyperparameter section. Each model has different hyperparameters taht are described in help sections if needed.
+        
         model_params: dict = {}
+
 
         if model_name == "Linear Regression":
             
@@ -95,7 +102,7 @@ with st.sidebar:
             
             model_params["C"] = st.slider(
                 "Inverse regularization strength (C)",
-                0.01, 10.0, 1.0, 0.01,
+                0.0, 10.0, 1.0, 0.01,
                 help = "Balances keeping coefficients small and fitting training data.")
             
             model_params["penalty"] = st.selectbox(
@@ -103,9 +110,13 @@ with st.sidebar:
                 ["L2", "L1"],
                 help = "L2 (Ridge): shrinks coefficients to zero.\nL1 (Lasso): zeros out coefficients entirely for accuracy and interpretability.")
             
-            # liblinear supports both L1 and L2 and works well on small-to-medium datasets
+            # Can use liblinear or any other solver to solve L1 and L2 regularization problems
             model_params["solver"] = "liblinear"
+
+            # Want high iterations to get a good result, but not too high that the computation takes long. Tested 1000 and works so will use.
             model_params["max_iter"] = 1000
+
+            # Use the random seed the user selected
             model_params["random_state"] = int(random_state)
 
 
