@@ -335,8 +335,8 @@ with st.spinner("Training the model"):
 
         **Adjust C to find the right balance out the differing effects of false negatives and false positives.**""")
 
-            table1, table2, table3, tab4 = st.tabs(
-                ["Confusion Matrix", "ROC Curve", "Feature Coefficients", "Classification Report"])
+            table1, table2, table3 = st.tabs(
+                ["Confusion Matrix", "ROC Curve", "Feature Coefficients"])
 
             with table1:
                 cm = confusion_matrix(y_test, y_pred)
@@ -387,18 +387,6 @@ with st.spinner("Training the model"):
                 st.pyplot(fig)
                 plt.close(fig)
                 st.caption("Green bars increase the log-odds of the positive class; red bars decrease them. Longer bars indicate stronger influence. Try switching between L1 and L2 penalty, L1 may zero out some bars entirely.")
-
-            with tab4:
-                report = classification_report(
-                    y_test, y_pred,
-                    target_names=display_labels,
-                    output_dict=True, zero_division=0)
-                
-                st.dataframe(
-                    pd.DataFrame(report).transpose().style.format(precision=3),
-                    use_container_width=True)
-                
-                st.caption("Per-class breakdown of Precision, Recall, and F1. 'Support' is the number of true instances for each class in the test set.")
 
 
 
