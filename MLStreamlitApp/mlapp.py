@@ -275,7 +275,7 @@ with st.spinner("Training the model"):
                     "Coefficient": model.coef_
                 }).sort_values("Coefficient", key=abs, ascending=True)
                 fig, ax = plt.subplots(figsize=(5, max(3, len(feature_cols) * 0.35)))
-                colors = ["red" if c < 0 else "gree" for c in coef_df["Coefficient"]]
+                colors = ["red" if c < 0 else "green" for c in coef_df["Coefficient"]]
                 ax.barh(coef_df["Feature"], coef_df["Coefficient"], color=colors)
                 ax.axvline(0, color="black", lw=1)
                 ax.set_xlabel("Coefficient value")
