@@ -176,22 +176,25 @@ if model_name == "Logistic Regression" and target_is_continuous:
     st.stop()
 
 
-## ADAPTIVE TRAINING
+## TRAINING
 
-
+    # Choose st.spinner to have the model trained right as a choice/change is made on the sidebar
 with st.spinner("Training the model"):
     
     try:
         working = df[feature_cols + [target_col]].copy()
 
-        # For logistic regression, save original label names before any encoding
+        # For logistic regression, save original label names before any encoding for easier interpretation at the visualizations
+        # This makes it so the confusion matrix says "Female" and "Male" instead of 0 and 1, for example
+        
         original_target_labels = None
         if model_name == "Logistic Regression":
             le = LabelEncoder()
             le.fit(working[target_col].astype(str))
-            original_target_labels = le.classes_          # e.g. ['Female', 'Male']
+            original_target_labels = le.classes_ 
             working[target_col] = le.transform(working[target_col].astype(str))
 
+        
         # Encode any remaining text columns in features
         for col in working[feature_cols].select_dtypes(include=["object", "category"]).columns:
             working[col] = OrdinalEncoder().fit_transform(working[[col]])
@@ -201,7 +204,7 @@ with st.spinner("Training the model"):
         working = working.dropna()
         dropped = before - len(working)
         if dropped > 0:
-            st.warning(f"⚠️ {dropped} row(s) with missing values were dropped before training.")
+            st.warning(f"{dropped} row(s) with missing values were dropped before training.")
 
         X = working[feature_cols].values
         y = working[target_col].values
@@ -220,21 +223,25 @@ with st.spinner("Training the model"):
         
 
         ## LINEAR REGRESSION SECTION
+
         
         if model_name == "Linear Regression":
-            penalty = model_params.pop("penalty")  # Ridge = L2, LASSO = L1
+
+            # Train the model with the correct regularization and train/test split
+            penalty = model_params.pop("penalty") 
             LinearModel = Lasso if penalty == "l1" else Ridge
             model = LinearModel(**model_params)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
 
+            # Calculate the evaluation metrics
             r2   = r2_score(y_test, y_pred)
             mse  = mean_squared_error(y_test, y_pred)
             rmse = np.sqrt(mse)
             mae  = mean_absolute_error(y_test, y_pred)
 
+            # Present the Evaluation Metrics  below the dataset preview
             st.subheader("Model Performance: Linear Regression")
-
             col1, col2, col3, col4 = st.columns(4)
             col1.metric("R²", f"{r2:.5f}")
             col2.metric("MSE", f"{mse:.5f}")
@@ -243,6 +250,7 @@ with st.spinner("Training the model"):
 
 
             # WHAT DOES A GOOD SCORE LOOK LIKE?
+            # This will be a dropdown expander below the presented metrics that explains what each is and a good score for them.
             
             with st.expander("How do I interpret these metrics?"):
                 st.markdown("""
@@ -255,32 +263,42 @@ with st.spinner("Training the model"):
     **Adjust hyperparameter α to improve R².**""")
 
 
-            table1, table2, table3 = st.tabs(
-                ["Predicted vs Actual", "Residuals", "Feature Coefficients"]
-            )
 
+            # Along with the metrics, there will be 3 tables: Predicted vs Actual values, Residuals (Predicted - Actual), and the Coefficients Visualized
+            
+            table1, table2, table3 = st.tabs(
+                ["Predicted vs Actual", "Residuals", "Feature Coefficients"])
+
+                # Predicted vs Actual with a reference line to perfect prediction to quickly see how well the model did
             with table1:
-                fig, ax = plt.subplots(figsize=(5, 4))
-                ax.scatter(y_test, y_pred, alpha=0.6, color="#185FA5", edgecolors="white", s=50)
+                fig, ax = plt.subplots(figsize = (5, 4))
+                ax.scatter(y_test, y_pred, alpha = 0.5, color = "blue", edgecolors = "white", s = 50)
+                    # limit the graph to just show where the values are
                 lims = [min(y_test.min(), y_pred.min()), max(y_test.max(), y_pred.max())]
-                ax.plot(lims, lims, "k--", lw=1.5, label="Perfect prediction")
+                    # Perfectly linear dashed line as the reference
+                ax.plot(lims, lims, "k--", lw=1, label = "Perfect Prediction")
                 ax.set_xlabel("Actual values")
                 ax.set_ylabel("Predicted values")
                 ax.set_title("Predicted vs Actual")
                 ax.legend()
                 st.pyplot(fig)
                 plt.close(fig)
+                    # Add a caption below to explain the viz
                 st.caption("Points closer to the dashed line indicate accurate predictions, and distance between points and line shows prediction error (residuals).")
 
+                # Residuals plot. They should be white noise around the origin in the left image and approximately normally distributed
+                # in the right image to have confidence in the model.
             with table2:
                 residuals = y_test - y_pred
-                fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-                axes[0].scatter(y_pred, residuals, alpha=0.6, color="blue", edgecolors="white", s=50)
-                axes[0].axhline(0, color="black", lw=1.5, linestyle="--")
+                fig, axes = plt.subplots(1, 2, figsize = (10, 4))
+                axes[0].scatter(y_pred, residuals, alpha = 0.5, color = "blue", edgecolors = "white", s = 40)
+                axes[0].axhline(0, color = "black", lw = 1, linestyle="--")
                 axes[0].set_xlabel("Predicted values")
                 axes[0].set_ylabel("Residuals")
                 axes[0].set_title("Residuals vs Fitted")
-                axes[1].hist(residuals, bins=20, color="purple", edgecolor="white")
+
+                    # Making the residuals distribution
+                axes[1].hist(residuals, bins = 25, color = "purple", edgecolor = "white")
                 axes[1].set_xlabel("Residual")
                 axes[1].set_ylabel("Frequency")
                 axes[1].set_title("Residual Distribution")
@@ -289,15 +307,18 @@ with st.spinner("Training the model"):
                 plt.close(fig)
                 st.caption("In an ideal model, the residuals are randomly scattered around zero and in an approximate bell curve distribution.")
 
+                # This image is of the coefficients visualized with their relative sizes. This is to tell the user what the 
+                # coefficients are but also shows the affect of the L1 vs L2 norms on the coefficients.
             with table3:
                 coef_df = pd.DataFrame({
                     "Feature": feature_cols,
                     "Coefficient": model.coef_
                 }).sort_values("Coefficient", key=abs, ascending=True)
-                fig, ax = plt.subplots(figsize=(5, max(3, len(feature_cols) * 0.35)))
-                colors = ["red" if c < 0 else "green" for c in coef_df["Coefficient"]]
-                ax.barh(coef_df["Feature"], coef_df["Coefficient"], color=colors)
-                ax.axvline(0, color="black", lw=1)
+                fig, ax = plt.subplots(figsize = (5, max(3, len(feature_cols) * 0.35)))
+                    # Make positive values green and negative values red just for appearance
+                bar_colors = ["red" if c < 0 else "green" for c in coef_df["Coefficient"]]
+                ax.barh(coef_df["Feature"], coef_df["Coefficient"], color = bar_colors)
+                ax.axvline(0, color = "black", lw = 1)
                 ax.set_xlabel("Coefficient value")
                 ax.set_title("Feature Coefficients")
                 st.pyplot(fig)
@@ -305,45 +326,40 @@ with st.spinner("Training the model"):
                 st.caption("Green bars show a positive relationship with the target, red bars show a negative relationship. Longer bars mean larger coefficients in magnitude.")
 
         ## LOGISTIC REGRESSION SECTION
-        
-        
+
         elif model_name == "Logistic Regression":
+
+                # Train the model with the correct regularization and train/test split
             model_params["penalty"] = model_params["penalty"].lower()
-            model = LogisticRegression(**model_params)
             model = LogisticRegression(**model_params)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
+        
+            display_labels = original_target_labels if original_target_labels is not None else np.array(["0", "1"])
 
-            class_indices  = np.unique(y).astype(int)
-            display_labels = (original_target_labels[class_indices]
-                              if original_target_labels is not None
-                              else class_indices.astype(str))
-            n_classes = len(class_indices)
-            is_binary = n_classes == 2
-            avg = "binary" if is_binary else "weighted"
+            # Calculate the evaluation metrics
+            accuracy  = accuracy_score(y_test, y_pred)
+            precision = precision_score(y_test, y_pred, zero_division=0)
+            recall  = recall_score(y_test, y_pred, zero_division=0)
+            f1   = f1_score(y_test, y_pred, zero_division=0)
+            auc  = roc_auc_score(y_test, model.predict_proba(X_test)[:, 1])
 
-            acc  = accuracy_score(y_test, y_pred)
-            prec = precision_score(y_test, y_pred, average=avg, zero_division=0)
-            rec  = recall_score(y_test, y_pred, average=avg, zero_division=0)
-            f1   = f1_score(y_test, y_pred, average=avg, zero_division=0)
-
-            y_prob = model.predict_proba(X_test)
-            auc = (roc_auc_score(y_test, y_prob[:, 1])
-                   if is_binary
-                   else roc_auc_score(y_test, y_prob, multi_class="ovr", average="weighted"))
-
+            # Present the metrics
             st.subheader("Model Performance: Logistic Regression")
-
             col1, col2, col3, col4, col5 = st.columns(5)
-            col1.metric("Accuracy",  f"{acc:.4f}")
-            col2.metric("Precision", f"{prec:.4f}")
-            col3.metric("Recall",    f"{rec:.4f}")
+            col1.metric("Accuracy",  f"{accuracy:.4f}")
+            col2.metric("Precision", f"{precision:.4f}")
+            col3.metric("Recall",    f"{recall:.4f}")
             col4.metric("F1 Score",  f"{f1:.4f}")
             col5.metric("AUC-ROC",   f"{auc:.4f}")
 
 
 
+
+
             # WHAT DOES A GOOD SCORE LOOK LIKE?
+            # This will be a dropdown expander below the presented metrics that explains what each is and a good score for them.
+            
             with st.expander("How to interpret these metrics"):
                 st.markdown("""
 | Metric | What it measures | 
@@ -359,13 +375,14 @@ with st.spinner("Training the model"):
             table1, table2, table3 = st.tabs(
                 ["Confusion Matrix", "ROC Curve", "Feature Coefficients"])
 
+                # Confusion matrix showing TN, TP, FN, FP
             with table1:
-                cm = confusion_matrix(y_test, y_pred)
-                fig, ax = plt.subplots(figsize=(5, 4))
+                cmatrix = confusion_matrix(y_test, y_pred)
+                fig, ax = plt.subplots(figsize = (5, 4))
                 sns.heatmap(
-                    cm, annot=True, fmt="d", cmap="Blues",
-                    xticklabels=display_labels, yticklabels=display_labels, ax=ax
-                )
+                    cmatrix, annot = True, fmt = "d", cmap = "Blues",
+                    xticklabels = display_labels, yticklabels = display_labels, ax = ax)
+                
                 ax.set_xlabel("Predicted label")
                 ax.set_ylabel("True label")
                 ax.set_title("Confusion Matrix")
@@ -373,24 +390,21 @@ with st.spinner("Training the model"):
                 plt.close(fig)
                 st.caption("Top left are true negatives and bottom right are true positives, these are correct predictions. Top right are false positives and bottom left are false negatives, these are the errors.")
 
+                # AUC curve
             with table2:
-                fig, ax = plt.subplots(figsize=(5, 4))
-                if is_binary:
-                    fpr, tpr, _ = roc_curve(y_test, y_prob[:, 1])
-                    ax.plot(fpr, tpr, label=f"AUC = {auc:.3f}", color="blue", lw=2)
-                else:
-                    for i, (idx, lbl) in enumerate(zip(class_indices, display_labels)):
-                        fpr, tpr, _ = roc_curve((y_test == idx).astype(int), y_prob[:, i])
-                        ax.plot(fpr, tpr, lw=1.5, label=str(lbl))
+                fig, ax = plt.subplots(figsize = (5, 4))
+                fpr, tpr, _ = roc_curve(y_test, y_prob[:, 1])
+                ax.plot(fpr, tpr, label=f"AUC = {auc:.5f}", color = "blue", lw = 1.5)
                 ax.plot([0, 1], [0, 1], "k--", lw=1, label="Random classifier")
                 ax.set_xlabel("False Positive Rate")
                 ax.set_ylabel("True Positive Rate")
                 ax.set_title("ROC Curve")
-                ax.legend(loc="lower right")
+                ax.legend(loc = "lower right")
                 st.pyplot(fig)
                 plt.close(fig)
                 st.caption("Shows the tradeoff between true positives and false positive rates. A convex curve bending towards the top left corner is ideal. A straight, linear line represents an AUC of 0.5.")
 
+                # Another coefficients visualization
             with table3:
                 coefs = (np.abs(model.coef_).mean(axis=0)
                          if model.coef_.ndim > 1
@@ -410,7 +424,7 @@ with st.spinner("Training the model"):
                 st.caption("Green bars increase the log-odds of the positive class; red bars decrease them. Longer bars indicate stronger influence. Try switching between L1 and L2 penalty, L1 may zero out some bars entirely.")
 
 
-
+        # Have a neat error message if for some reason the training does not work instead of an ugly, long error message
     except Exception as e:
         st.error(f"Training failed: {e}")
         st.exception(e)
