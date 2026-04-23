@@ -96,7 +96,7 @@ with st.sidebar:
             model_params["C"] = st.slider(
                 "Inverse regularization strength (C)",
                 0.01, 10.0, 1.0, 0.01,
-                help = "Balances keeping coefficients small and fitting training test data.")
+                help = "Balances keeping coefficients small and fitting training data.")
             
             model_params["penalty"] = st.selectbox(
                 "Penalty type",
