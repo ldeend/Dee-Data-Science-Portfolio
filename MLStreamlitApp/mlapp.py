@@ -342,7 +342,9 @@ with st.spinner("Training the model"):
             precision = precision_score(y_test, y_pred, zero_division=0)
             recall  = recall_score(y_test, y_pred, zero_division=0)
             f1   = f1_score(y_test, y_pred, zero_division=0)
+                # For ROC curve
             auc  = roc_auc_score(y_test, model.predict_proba(X_test)[:, 1])
+
 
             # Present the metrics
             st.subheader("Model Performance: Logistic Regression")
@@ -392,8 +394,9 @@ with st.spinner("Training the model"):
 
                 # AUC curve
             with table2:
+                
                 fig, ax = plt.subplots(figsize = (5, 4))
-                fpr, tpr, _ = roc_curve(y_test, y_prob[:, 1])
+                fpr, tpr, _ = roc_curve(y_test, model.predict_proba(X_test)[:, 1])
                 ax.plot(fpr, tpr, label=f"AUC = {auc:.5f}", color = "blue", lw = 1.5)
                 ax.plot([0, 1], [0, 1], "k--", lw=1, label="Random classifier")
                 ax.set_xlabel("False Positive Rate")
