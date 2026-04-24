@@ -181,10 +181,18 @@ with st.spinner("Training the model"):
 
         # For logistic regression, save original label names before any encoding for easier interpretation at the visualizations
         # This makes it so the confusion matrix says "Female" and "Male" instead of 0 and 1, as an example
-        # Encode any non-numeric feature columns
-        for col in all_var[feature_cols].columns:
-            if not pd.api.types.is_numeric_dtype(all_var[col]):
-                all_var[col] = OrdinalEncoder().fit_transform(all_var[[col]])
+
+        # Saving the target labels for logistic regression
+        original_target_labels = None
+        if model_name == "Logistic Regression":
+            le = LabelEncoder()
+            le.fit(working[target_col].astype(str))
+            original_target_labels = le.classes_      
+            all_var[target_col] = le.transform(all_var[target_col].astype(str))
+
+        # Encode any remaining text columns in features for sklearn to work properly.
+        for col in all_var[feature_cols].select_dtypes(include = ["object", "category"]).columns:
+            all_var[col] = OrdinalEncoder().fit_transform(all_var[[col]])
         
         # Drop rows with missing values so the model doesn't run into issues. Missing data is a different machine learning problem.
         old_len = len(all_var)
