@@ -97,7 +97,7 @@ with st.sidebar:
             
             model_params["penalty"] = st.selectbox(
                 "Penalty type",
-                ["l2", "l1"],
+                ["L2", "L1"],
                 help = "L2 (Ridge): shrinks coefficients to zero.\nL1 (Lasso): zeros out coefficients entirely for accuracy and interpretability.")
 
         elif model_name == "Logistic Regression":
