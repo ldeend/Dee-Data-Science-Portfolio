@@ -54,6 +54,8 @@ with st.sidebar:
             "Feature variables (what you are using to predict)",
                 # Default to have a random variable selected so the model works immediately
             non_targets, default = non_targets[:1])
+        if feautre_cols is None:
+            st.error("Select one or more feature variables")
 
         
 
