@@ -186,8 +186,8 @@ with st.spinner("Training the model"):
         original_target_labels = sorted(all_var[target_col].unique())
         # Make sure they are consistent for later, so eg 0s are always male and 1s are always female
         mapping = {original_target_labels[0]: 0, original_target_labels[1]: 1}
+        all_var[target_col] = all_var[target_col].map(mapping) 
         
-        all_var[target_col] = all_var[target_col].map(mapping)
             
         
         # Drop rows with missing values so the model doesn't run into issues. Missing data is a different machine learning problem.
