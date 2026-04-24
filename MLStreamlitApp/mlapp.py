@@ -87,11 +87,11 @@ with st.sidebar:
         
         model_params: dict = {}
 
-
         if model_name == "Linear Regression":
             
             model_params["alpha"] = st.slider(
                 "Regularization strength (α)",
+                    # Chose range 0 to 10 for alpha and C
                 0.0, 10.0, 1.0, 0.01,
                 help = "α penalizes larger coefficients, reducing overfitting. The higher the α, the stronger the shrinkage. α = 0 is regular OLS.")
             
@@ -259,7 +259,7 @@ with st.spinner("Training the model"):
 | **MSE** | Mean squared error of predictions. Larger errors are penalized more. The lower the score, the better. Compare this across different hyperparameters |
 | **RMSE** | Square root of MSE. Same units as the target, easier to interpret. Ideally, small compared to the range of the predicted variable.|
 | **MAE** | Average absolute error of predictions. Less sensitive to outliers and large errors than RMSE. |
-    **Adjust hyperparameter α to improve R².**""")
+    Adjust hyperparameter α to improve R².""")
 
 
 
@@ -371,7 +371,7 @@ with st.spinner("Training the model"):
 | **F1 Score** | Harmonic mean of Precision and Recall. Best single metric when classes are imbalanced. 0.80+ is good|
 | **AUC-ROC** | Area under the ROC curve. Measures how well the model separates classes regardless of threshold. 0.5 means no better than random guessing, 0.80+ is good|
 
-        **Adjust C to find the right balance out the differing effects of false negatives and false positives.**""")
+        Adjust C to find the right balance out the differing effects of false negatives and false positives.""")
 
             table1, table2, table3 = st.tabs(
                 ["Confusion Matrix", "ROC Curve", "Feature Coefficients"])
