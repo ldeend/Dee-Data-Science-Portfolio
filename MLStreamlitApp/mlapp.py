@@ -181,23 +181,20 @@ with st.spinner("Training the model"):
 
         # For logistic regression, save original label names before any encoding for easier interpretation at the visualizations
         # This makes it so the confusion matrix says "Female" and "Male" instead of 0 and 1, as an example
-
-        # Look at just the target variables 
-        original_target_labels = sorted(all_var[target_col].unique())
-        # Make sure they are consistent for later, so eg 0s are always male and 1s are always female
-        mapping = {original_target_labels[0]: 0, original_target_labels[1]: 1}
-        all_var[target_col] = all_var[target_col].map(mapping) 
-        
-            
+        # Encode any non-numeric feature columns
+        for col in all_var[feature_cols].columns:
+            if not pd.api.types.is_numeric_dtype(all_var[col]):
+                all_var[col] = OrdinalEncoder().fit_transform(all_var[[col]])
         
         # Drop rows with missing values so the model doesn't run into issues. Missing data is a different machine learning problem.
         old_len = len(all_var)
         all_var = all_var.dropna()
         num_dropped = old_len - len(all_var)
         if num_dropped == 1:
-            st.caption(f"1 row with missing values was dropped before training.")
+            st.caption("1 row with missing values was dropped before training.")
         elif num_dropped > 1:
-            st.caption(f"{dropped} rows with missing values were dropped before training.")
+            st.caption(f"{num_dropped} rows with missing values were dropped before training.")
+        
 
             # Split the dataset into the training set and testing set based on the new, cleaned dataset        
         X = all_var[feature_cols].values
