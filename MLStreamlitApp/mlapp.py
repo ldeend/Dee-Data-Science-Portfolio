@@ -170,9 +170,8 @@ if model_name == "Logistic Regression" and not is_binary(df[target_col]):
 
     # Choose st.spinner to have the model trained right as a choice/change is made on the sidebar
 with st.spinner("Training the model"):
-    
+  
     try:
-
         # All the columns/variables used
         all_var = df[feature_cols + [target_col]].copy()
 
@@ -181,15 +180,12 @@ with st.spinner("Training the model"):
         
         original_target_labels = None
         if model_name == "Logistic Regression":
-            le = LabelEncoder()
-            le.fit(all_var[target_col].astype(str))
-            original_target_labels = le.classes_ 
-            all_var[target_col] = le.transform(all_var[target_col].astype(str))
-
-        # Encode any remaining text columns in features
+            original_target_labels = all_var[target_col].unique()
+            all_var[target_col] = (all_var[target_col] == original_target_labels[1]).astype(int)
+    
         for col in all_var[feature_cols].select_dtypes(include=["object", "category"]).columns:
             all_var[col] = OrdinalEncoder().fit_transform(all_var[[col]])
-
+            
         
         # Drop rows with missing values so the model doesn't run into issues. Missing data is a different machine learning problem.
         old_len = len(all_var)
