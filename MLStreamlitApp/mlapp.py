@@ -186,7 +186,7 @@ with st.spinner("Training the model"):
         original_target_labels = None
         if model_name == "Logistic Regression":
             le = LabelEncoder()
-            le.fit(working[target_col].astype(str))
+            le.fit(all_var[target_col].astype(str))
             original_target_labels = le.classes_      
             all_var[target_col] = le.transform(all_var[target_col].astype(str))
 
