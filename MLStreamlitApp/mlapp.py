@@ -154,17 +154,17 @@ with st.expander("Quick Dataset Preview", expanded = True):
 
 # Verify that the model matches the data type of the target variable (or else model will not work)
 
-def is_numeric(series):
-    return pd.api.types.is_numeric_dtype(series)
-if model_name == "Linear Regression" and not is_numeric(df[target_col]):
-    st.error(f"**'{target_col}'** is not numeric. Linear Regression requires a numeric target. Switch to Logistic Regression or choose a different target column.")
+def numeric(series):
+    return pd.api.types.numeric_dtype(series)
+if model_name == "Linear Regression" and not numeric(df[target_col]):
+    st.error(f"'{target_col}' is not numeric. Linear Regression requires a numeric target. Switch to Logistic Regression or choose a different target column.")
     st.stop()
 
 
-def is_binary(series):
+def binary(series):
     return series.nunique() == 2
 if model_name == "Logistic Regression" and not is_binary(df[target_col]):
-    st.error(f"**'{target_col}'** is not binary ({df[target_col].nunique()} unique values). Logistic Regression requires a binary target. Switch to Linear Regression or choose a different target column.")
+    st.error(f"'{target_col}' is not binary ({df[target_col].nunique()} unique values). Logistic Regression requires a binary target. Switch to Linear Regression or choose a different target column.")
     st.stop()
 
 
@@ -184,13 +184,13 @@ with st.spinner("Training the model"):
         # For logistic regression, save original label names before any encoding for easier interpretation at the visualizations
         # This makes it so the confusion matrix says "Female" and "Male" instead of 0 and 1, as an example
 
-        # Saving the target labels for logistic regression
-        original_target_labels = None
+        # Saving the target labels for logistic regression (used youtube.com/watch?v=15uClAVV-rI for Encoder explanation)
+        target_labels = None
         if model_name == "Logistic Regression":
-            le = LabelEncoder()
-            le.fit(all_var[target_col].astype(str))
-            original_target_labels = le.classes_      
-            all_var[target_col] = le.transform(all_var[target_col].astype(str))
+            encoder = LabelEncoder()
+            encoder.fit(all_var[target_col].astype(str))
+            target_labels = encoder.classes_      
+            all_var[target_col] = encoder.transform(all_var[target_col].astype(str))
 
         # Encode any remaining text columns in features for sklearn to work properly.
         for col in all_var[feature_cols].select_dtypes(include = ["object", "category"]).columns:
@@ -334,7 +334,7 @@ with st.spinner("Training the model"):
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
         
-            show_labels = original_target_labels if original_target_labels is not None else np.array(["0", "1"])
+            show_labels = target_labels if target_labels is not None else np.array(["0", "1"])
 
             # Calculate the evaluation metrics
             accuracy  = accuracy_score(y_test, y_pred)
