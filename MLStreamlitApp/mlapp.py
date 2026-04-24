@@ -97,7 +97,7 @@ with st.sidebar:
             
             model_params["penalty"] = st.selectbox(
                 "Penalty type",
-                ["L2", "L1"],
+                ["l2", "l1"],
                 help = "L2 (Ridge): shrinks coefficients to zero.\nL1 (Lasso): zeros out coefficients entirely for accuracy and interpretability.")
 
         elif model_name == "Logistic Regression":
@@ -228,7 +228,8 @@ with st.spinner("Training the model"):
 
             # Train the model with the correct regularization and train/test split
             penalty = model_params.pop("penalty") 
-            LinearModel = Lasso if penalty == "l1" else Ridge
+                # Remove penalty since sklearn can't work with it, but LinearModel can
+            LinearModel = Lasso if penalty == "L1" else Ridge
             model = LinearModel(**model_params)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
@@ -330,6 +331,7 @@ with st.spinner("Training the model"):
 
                 # Train the model with the correct regularization and train/test split
             model_params["penalty"] = model_params["penalty"].lower()
+                # Needs to be lowercase: we call it L1 and L2 but Python needs it in l1 or l2
             model = LogisticRegression(**model_params)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
