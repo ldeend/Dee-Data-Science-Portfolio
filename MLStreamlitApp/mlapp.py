@@ -175,16 +175,19 @@ with st.spinner("Training the model"):
         # All the columns/variables used
         all_var = df[feature_cols + [target_col]].copy()
 
-        # For logistic regression, save original label names before any encoding for easier interpretation at the visualizations
-        # This makes it so the confusion matrix says "Female" and "Male" instead of 0 and 1, for example
         
-        original_target_labels = None
-        if model_name == "Logistic Regression":
-            original_target_labels = all_var[target_col].unique()
-            all_var[target_col] = (all_var[target_col] == original_target_labels[1]).astype(int)
-    
-        for col in all_var[feature_cols].select_dtypes(include=["object", "category"]).columns:
-            all_var[col] = OrdinalEncoder().fit_transform(all_var[[col]])
+        # Before actual training, we need to do a few things. We need to remember the target names (if binary) for later, 
+        # drop rows with any missing values, and create the training and testing sets based on the train/test split.
+
+        # For logistic regression, save original label names before any encoding for easier interpretation at the visualizations
+        # This makes it so the confusion matrix says "Female" and "Male" instead of 0 and 1, as an example
+
+        # Look at just the target variables 
+        original_target_labels = sorted(all_var[target_col].unique())
+        # Make sure they are consistent for later, so eg 0s are always male and 1s are always female
+        mapping = {original_target_labels[0]: 0, original_target_labels[1]: 1}
+        
+        all_var[target_col] = all_var[target_col].map(mapping)
             
         
         # Drop rows with missing values so the model doesn't run into issues. Missing data is a different machine learning problem.
@@ -324,7 +327,7 @@ with st.spinner("Training the model"):
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
         
-            display_labels = original_target_labels if original_target_labels is not None else np.array(["0", "1"])
+            show_labels = original_target_labels if original_target_labels is not None else np.array(["0", "1"])
 
             # Calculate the evaluation metrics
             accuracy  = accuracy_score(y_test, y_pred)
@@ -372,7 +375,7 @@ with st.spinner("Training the model"):
                 fig, ax = plt.subplots(figsize = (5, 4))
                 sns.heatmap(
                     cmatrix, annot = True, fmt = "d", cmap = "Blues",
-                    xticklabels = display_labels, yticklabels = display_labels, ax = ax)
+                    xticklabels = show_labels, yticklabels = show_labels, ax = ax)
                 
                 ax.set_xlabel("Predicted label")
                 ax.set_ylabel("True label")
