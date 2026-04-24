@@ -155,7 +155,7 @@ with st.expander("Quick Dataset Preview", expanded = True):
 # Verify that the model matches the data type of the target variable (or else model will not work)
 
 def numeric(series):
-    return pd.api.types.numeric_dtype(series)
+    return pd.api.types.is_numeric_dtype(series)
 if model_name == "Linear Regression" and not numeric(df[target_col]):
     st.error(f"'{target_col}' is not numeric. Linear Regression requires a numeric target. Switch to Logistic Regression or choose a different target column.")
     st.stop()
@@ -163,7 +163,7 @@ if model_name == "Linear Regression" and not numeric(df[target_col]):
 
 def binary(series):
     return series.nunique() == 2
-if model_name == "Logistic Regression" and not is_binary(df[target_col]):
+if model_name == "Logistic Regression" and not binary(df[target_col]):
     st.error(f"'{target_col}' is not binary ({df[target_col].nunique()} unique values). Logistic Regression requires a binary target. Switch to Linear Regression or choose a different target column.")
     st.stop()
 
