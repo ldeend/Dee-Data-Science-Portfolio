@@ -119,7 +119,7 @@ with st.sidebar:
                 help="Where to 'cut' the dendrogram. The Dendrogram tab helps you choose this visually.")
             model_params["linkage"] = st.selectbox(
                 "Linkage method", ["ward", "complete", "average", "single"],
-                help=("ward: minimizes variance within clusters. Best general-purpose choice.\n"
+                help=("ward: minimizes variance within clusters. Best general purpose choice.\n"
                       "complete: uses the maximum distance between cluster members.\n"
                       "average: uses the mean distance between all pairs.\n"
                       "single: uses the minimum distance, which is prone to chaining."))
