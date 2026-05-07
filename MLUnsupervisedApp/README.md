@@ -60,6 +60,13 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 - You can choose values for each model's hyperparameters and try different random seeds
 - Every time an aspect of the model is changed (tweaking a hyperparameter, adding a feature, etc.), it re-renders the model automatically, allowing for quick comparison and tuning
 
+### Output
+- Each model outputs variance evaluation metrics and visualizations to understand the model's performance
+- For each model output, there is a dropdown panel titled **"How to interpret these metrics"** that explains what each metric is and what a good value is for each
+- Along with each visualization is a short description
+- Every time an aspect of the model is changed (tweaking a hyperparameter, adding a feature, etc.), it re-renders the model automatically, allowing for quick comparison and tuning 
+
+
 ## References
 
 For more information or clarification about some of the machine learning topics used, here are some references I used:
