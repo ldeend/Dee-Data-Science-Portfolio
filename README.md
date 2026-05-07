@@ -65,7 +65,7 @@ The motivation for this project was to reinforce what I've learned about supervi
 
 ### Project Overview
 
-In this project, I built a live, interactive web application with Python and Streamlit where users can upload a dataset and run an unsupervised machine learning model on it — either K-Means Clustering, Hierarchical Clustering, or PCA. Users can select feature variables, tune hyperparameters, and observe how their choices affect the model's output. There is no coding experience required, and all machine learning topics are explained in the app. Click on the title to go directly to the repo and learn more.
+In this project, I built a live, interactive web application with Python and Streamlit where users can upload a dataset and run an unsupervised machine learning model on it, either K Means Clustering, Hierarchical Clustering, or PCA. Users can select feature variables, tune hyperparameters, and observe how their choices affect the model's output. There is no coding experience required, and all ML topics are explained in the app. Click on the title to go directly to the repo and learn more.
 
 The app is linked here (**[Live Unsupervised ML App](https://lucasdee-unsupervisedmlapp.streamlit.app/)**), and more information about it is in the section below.
 
@@ -73,8 +73,8 @@ The app is linked here (**[Live Unsupervised ML App](https://lucasdee-unsupervis
 The app has these features:
 - Accepts a CSV dataset uploaded by the user
 - Supports K-Means Clustering, Hierarchical Clustering, and PCA
-- Includes hyperparameters that are all easily adjustable: number of clusters (k), initialization method, linkage method, distance metric, number of components, and more
-- Provides evaluation metrics and visualizations specific to each model (Elbow Plot, Silhouette Analysis, and Cluster Scatter for clustering and Scree Plot, Cumulative Variance, and Component Loadings for PCA)
+- Includes hyperparameters that are all easily adjustable
+- Provides evaluation metrics and visualizations specific to each model (Elbow Plot, Silhouette Plot for clustering and Scatter Plots for PCA)
 - Evaluation metrics and visualizations update automatically as hyperparameters are changed, allowing the user to more easily experiment and see the impact of their choices
 - Included guides for how to interpret every metric and visualization
 
