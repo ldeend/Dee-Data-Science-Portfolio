@@ -79,6 +79,6 @@ The app has these features:
 - Included guides for how to interpret every metric and visualization
 
 ### Motivation
-This project was a natural continuation of the supervised ML app, pushing me to understand a fundamentally different class of machine learning — one with no target variable and no right answer to evaluate against. Building it forced me to think carefully about what "good" even means in an unsupervised setting, and how to communicate that clearly to a user with no ML background. Like the supervised app, it adds to my portfolio by showcasing both **technical ability** in building and deploying a real ML tool and **communication ability** in making complex concepts approachable.
+This project was a natural continuation of the supervised ML app, pushing me to understand unsupervised machine learning, where the data has no target variable and no right answer to evaluate against. Building it forced me to think carefully about what "good" even means in an unsupervised setting and how to communicate that clearly to a user with no ML background. Like the supervised app, it adds to my portfolio by showcasing both technical ability in building and deploying a real ML tool and communication ability in making complex concepts approachable.
 
 **Key skills:** Python (scikit-learn, pandas, matplotlib, seaborn, scipy), Streamlit app design, Unsupervised Machine Learning (K-Means, Hierarchical Clustering, PCA), Model Evaluation and Visualization
