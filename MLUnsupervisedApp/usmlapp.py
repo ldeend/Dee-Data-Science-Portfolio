@@ -246,7 +246,6 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                 ax.set_ylabel(f"PC2 ({var_exp[1]*100:.1f}% variance)")
                 ax.set_title("Cluster Scatter with PC1, PC2")
                 ax.legend()
-                plt.colorbar(scatter, ax=ax, label = "Cluster")
                 st.pyplot(fig)
                 plt.close(fig)
                 st.caption("Each color represents a cluster. X marks show centroids. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.")
