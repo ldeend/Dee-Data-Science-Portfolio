@@ -217,10 +217,13 @@ with st.spinner("Running the model..."):
 | **Silhouette Score** | How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good. |
 Adjust k and watch both metrics together to find the best number of clusters.""")
 
-            tab1, tab2, tab3 = st.tabs(["Elbow Plot", "Cluster Scatter", "Silhouette Analysis"])
+            tab1, tab2, tab3 = st.tabs(["Elbow Plot", "Scatter Plot", "Silhouette Plot"])
 
+
+                # Elbow plot
             with tab1:
                 # elbow_inertias is cached, so changing k slider won't rerun all 15 fits
+
                 inertias = elbow_inertias(
                     X_scaled,
                     model_params["init"],
@@ -233,14 +236,15 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                 ax.axvline(model_params["n_clusters"], color="red", linestyle="--", lw=1.5,
                            label=f"Current k = {model_params['n_clusters']}")
                 ax.set_xlabel("Number of clusters (k)")
-                ax.set_ylabel("Inertia")
+                ax.set_ylabel("Inertia/Sum of Squared Distances")
                 ax.set_title("Elbow Plot")
                 ax.legend()
                 st.pyplot(fig)
                 plt.close(fig)
                 st.caption("Look for the 'elbow' aka the point where inertia starts decreasing more slowly. The red dashed line marks your current k. Try adjusting k to where the curve bends.")
 
-            with tab2:
+            # Scatter plot with clusters shown
+            with tab3:
                 pca_2d  = PCA(n_components=2, random_state=int(random_state))
                 X_2d    = pca_2d.fit_transform(X_scaled)
                 var_exp = pca_2d.explained_variance_ratio_
@@ -260,7 +264,8 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                 plt.close(fig)
                 st.caption("Each color represents a cluster. X marks show centroids. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.")
 
-            with tab3:
+            # Silhouette plot
+            with tab2:
                 sil_vals   = silhouette_samples(X_scaled, labels)
                 n_clusters = model_params["n_clusters"]
                 colors     = plt.cm.tab10(np.linspace(0, 1, n_clusters))
