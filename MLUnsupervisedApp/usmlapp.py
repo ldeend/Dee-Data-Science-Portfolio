@@ -125,7 +125,7 @@ with st.sidebar:
                 help=("ward: minimizes variance within clusters. Best general-purpose choice.\n"
                       "complete: uses the maximum distance between cluster members.\n"
                       "average: uses the mean distance between all pairs.\n"
-                      "single: uses the minimum distance — prone to chaining."))
+                      "single: uses the minimum distance, which is prone to chaining."))
             if model_params["linkage"] == "ward":
                 model_params["metric"] = "euclidean"
                 st.caption("Ward linkage requires Euclidean distance.")
@@ -140,9 +140,6 @@ with st.sidebar:
             model_params["n_components"] = st.slider(
                 "Number of components", 1, max_components, min(2, max_components),
                 help="How many principal components to retain. Use the Cumulative Variance tab to choose.")
-            model_params["whiten"] = st.checkbox(
-                "Whiten", value=False,
-                help="Scales each component to unit variance. Useful when features have very different scales.")
             model_params["random_state"] = int(random_state)
 
 ## MAIN PANEL
