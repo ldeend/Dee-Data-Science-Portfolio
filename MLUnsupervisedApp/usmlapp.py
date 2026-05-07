@@ -304,7 +304,7 @@ Adjust k and watch both metrics together to find the best number of clusters."""
 | **Silhouette Score** | How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good. |
 Try different linkage methods and compare Silhouette Scores to find the best configuration.""")
 
-            tab1, tab2, tab3 = st.tabs(["Dendrogram", "Silhouette Plot", "Scatter Plot"])
+            tab1, tab3 = st.tabs(["Dendrogram", "Scatter Plot"])
 
             # Dendrogram
             with tab1:
@@ -342,32 +342,6 @@ Try different linkage methods and compare Silhouette Scores to find the best con
                 plt.close(fig)
                 st.caption("Each color represents a cluster. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.")
 
-            # Silhouette Plot
-            with tab3:
-                sil_vals   = silhouette_samples(X_scaled, labels)
-                n_clusters = model_params["n_clusters"]
-                colors     = plt.cm.tab10(np.linspace(0, 1, n_clusters))
-
-                fig, ax = plt.subplots(figsize=(6, max(4, n_clusters * 0.8)))
-                y_lower = 10
-                for i in range(n_clusters):
-                    vals    = np.sort(sil_vals[labels == i])
-                    size    = vals.shape[0]
-                    y_upper = y_lower + size
-                    ax.fill_betweenx(np.arange(y_lower, y_upper), 0, vals,
-                                     facecolor=colors[i], edgecolor=colors[i], alpha=0.7)
-                    ax.text(-0.05, y_lower + 0.5 * size, str(i))
-                    y_lower = y_upper + 10
-
-                ax.axvline(sil_score, color="red", linestyle="--", lw=1.5,
-                           label=f"Avg = {sil_score:.4f}")
-                ax.set_xlabel("Silhouette coefficient")
-                ax.set_ylabel("Cluster")
-                ax.set_title("Silhouette Analysis by Cluster")
-                ax.legend()
-                st.pyplot(fig)
-                plt.close(fig)
-                st.caption("Wider bands = more data points in that cluster. Bands past the red average line = well-separated clusters. Thin or negative bands suggest that cluster overlaps with another.")
 
         ## PCA
         elif model_name == "PCA":
