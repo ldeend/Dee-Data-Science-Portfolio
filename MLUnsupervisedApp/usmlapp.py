@@ -214,7 +214,7 @@ Adjust k and watch both metrics together to find the best number of clusters."""
 
                 inertias = elbow_inertias(
                     X_scaled,
-                    model_params["init"],
+                    "k-means++",
                     model_params["n_init"],
                     model_params["max_iter"])
 
