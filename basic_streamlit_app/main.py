@@ -26,13 +26,17 @@ st.dataframe(team_df)
 
 # conference filter
 st.subheader("Filter by Conference")
-CONF = st.multiselect("Choose one or mulitple conferences", df["CONF"].unique())
 
-if CONF:
-    conf_df = df[df["CONF"].isin(CONF)]
+all_conferences = sorted(df["CONF"].unique())
+
+CONF = st.multiselect(
+    "Choose one or multiple conferences",
+    all_conferences,
+    default=all_conferences)
+
+conf_df = df[df["CONF"].isin(CONF)]
 
 st.dataframe(conf_df)
-
 
 # wins slider filter
 st.subheader("Filter by Wins")
