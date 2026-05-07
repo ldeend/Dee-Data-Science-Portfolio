@@ -88,8 +88,8 @@ with st.sidebar:
         model_name = st.selectbox(
             "Model",
             ["K-Means Clustering", "Hierarchical Clustering", "PCA"],
-            help=("K-Means: partitions data into k clusters by minimizing within-cluster distance.\n"
-                  "Hierarchical: builds a tree of clusters — no need to pre-specify k upfront.\n"
+            help=("K-Means: partitions data into k clusters by minimizing within cluster distance.\n"
+                  "Hierarchical: builds a tree of clusters, no need to pre-specify k upfront.\n"
                   "PCA: reduces dimensions while preserving as much variance as possible."))
 
         st.divider()
@@ -238,7 +238,7 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                 ax.legend()
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Look for the 'elbow' — the point where inertia starts decreasing more slowly. The red dashed line marks your current k. Try adjusting k to where the curve bends.")
+                st.caption("Look for the 'elbow' aka the point where inertia starts decreasing more slowly. The red dashed line marks your current k. Try adjusting k to where the curve bends.")
 
             with tab2:
                 pca_2d  = PCA(n_components=2, random_state=int(random_state))
@@ -258,7 +258,7 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                 plt.colorbar(scatter, ax=ax, label="Cluster")
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Each color represents a cluster. X marks show centroids. Data is projected to 2D for visualization — axis labels show how much variance each direction captures.")
+                st.caption("Each color represents a cluster. X marks show centroids. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.")
 
             with tab3:
                 sil_vals   = silhouette_samples(X_scaled, labels)
@@ -307,7 +307,7 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                 st.markdown("""
 | Metric | What it measures |
 |--------|-----------------|
-| **Clusters (k)** | Where the dendrogram is "cut." Use the Dendrogram tab to choose this visually — cut where vertical lines are longest. |
+| **Clusters (k)** | Where the dendrogram is "cut." Use the Dendrogram tab to choose this visually, cut where vertical lines are longest. |
 | **Linkage** | How distance between clusters is measured as they merge. Ward is the best general-purpose choice. |
 | **Silhouette Score** | How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good. |
 Try different linkage methods and compare Silhouette Scores to find the best configuration.""")
@@ -326,7 +326,7 @@ Try different linkage methods and compare Silhouette Scores to find the best con
                            label=f"Cut for k = {model_params['n_clusters']}")
                 ax.set_xlabel("Data points (or cluster size in brackets)")
                 ax.set_ylabel("Distance")
-                ax.set_title(f"Dendrogram — {model_params['linkage'].capitalize()} Linkage")
+                ax.set_title(f"Dendrogram: {model_params['linkage'].capitalize()} Linkage")
                 ax.legend()
                 st.pyplot(fig)
                 plt.close(fig)
@@ -346,7 +346,7 @@ Try different linkage methods and compare Silhouette Scores to find the best con
                 plt.colorbar(scatter, ax=ax, label="Cluster")
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Each color represents a cluster. Data is projected to 2D for visualization — axis labels show how much variance each direction captures.")
+                st.caption("Each color represents a cluster. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.")
 
             with tab3:
                 sil_vals   = silhouette_samples(X_scaled, labels)
@@ -425,7 +425,7 @@ Adjust the number of components and watch the cumulative variance. Aim for the f
                 ax.set_xticks(range(1, n_components + 1))
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Each bar shows how much variance a single component captures. Look for where the bars level off — components after that point add little new information.")
+                st.caption("Each bar shows how much variance a single component captures. Look for where the bars level off, components after that point add little new information.")
 
             with tab2:
                 fig, ax = plt.subplots(figsize=(6, 4))
@@ -441,7 +441,7 @@ Adjust the number of components and watch the cumulative variance. Aim for the f
                 ax.legend()
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Shows how much total variance is captured as you add more components. The orange and red lines mark the 80% and 90% thresholds — common targets for retaining enough information.")
+                st.caption("Shows how much total variance is captured as you add more components. The orange and red lines mark the 80% and 90% thresholds, which are common targets/reference points for retaining enough information.")
 
             with tab3:
                 loadings = pd.DataFrame(
