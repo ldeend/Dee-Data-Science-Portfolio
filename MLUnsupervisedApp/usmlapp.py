@@ -34,12 +34,12 @@ def prepare_data(feature_cols, data):
     return X_scaled, subset, len(data) - len(subset)
 
 @st.cache_data
-def elbow_inertias(X_scaled, init, n_init, max_iter, random_state):
-    """Run KMeans for k=1..15 and return inertias. Cached so slider changes don't re-run this."""
+def elbow_inertias(X_scaled, init, n_init, max_iter):
+    """Run KMeans for k=1..15 and return WCSS. Cached so slider changes don't rerun this."""
     inertias = []
     for k in range(1, 16):
         km = KMeans(n_clusters=k, init=init, n_init=n_init,
-                    max_iter=max_iter, random_state=random_state)
+                    max_iter=max_iter)
         km.fit(X_scaled)
         inertias.append(km.inertia_)
     return inertias
@@ -96,25 +96,18 @@ with st.sidebar:
         st.header("Tune Hyperparameters")
         st.caption("Tune for model testing and performance.")
 
-        random_state = st.number_input("Random seed", value=100, step=1,
-            help="Controls random initialization. Change this to test stability.")
-
         model_params: dict = {}
 
         if model_name == "K-Means Clustering":
             model_params["n_clusters"] = st.slider(
                 "Number of clusters (k)", 2, 15, 3,
                 help="The number of clusters to form. Use the Elbow Plot tab to choose the best k.")
-            model_params["init"] = st.selectbox(
-                "Initialization method", ["k-means++", "random"],
-                help="k-means++: smart initialization that avoids poor results.\nrandom: picks random starting centroids.")
             model_params["n_init"] = st.slider(
                 "Number of initializations (n_init)", 1, 20, 10,
                 help="How many times the algorithm runs with different seeds. The best result is kept.")
             model_params["max_iter"] = st.slider(
                 "Max iterations", 50, 500, 300, step=50,
                 help="Maximum iterations per run. Increase if the model is not converging.")
-            model_params["random_state"] = int(random_state)
 
         elif model_name == "Hierarchical Clustering":
             model_params["n_clusters"] = st.slider(
@@ -139,7 +132,6 @@ with st.sidebar:
             model_params["n_components"] = st.slider(
                 "Number of components", 1, max_components, min(2, max_components),
                 help="How many principal components to retain. Use the Cumulative Variance tab to choose.")
-            model_params["random_state"] = int(random_state)
 
 ## MAIN PANEL
 if df is None:
@@ -198,7 +190,7 @@ with st.spinner("Running the model..."):
             st.subheader("Model Performance: K-Means Clustering")
             col1, col2, col3 = st.columns(3)
             col1.metric("Clusters (k)",     model_params["n_clusters"])
-            col2.metric("Inertia",          f"{inertia:.2f}")
+            col2.metric("WCSS",          f"{inertia:.2f}")
             col3.metric("Silhouette Score", f"{sil_score:.4f}")
 
             # WHAT DOES A GOOD SCORE LOOK LIKE?
@@ -209,7 +201,7 @@ with st.spinner("Running the model..."):
 | Metric | What it measures |
 |--------|-----------------|
 | **Clusters (k)** | The number of clusters you chose. Use the Elbow Plot to find the best k. |
-| **Inertia** | Sum of squared distances from each point to its cluster center. Lower = tighter clusters. Compare across different values of k. |
+| **WCSS** | Sum of squared distances from each point to its cluster center. Lower = tighter clusters. Compare across different values of k. |
 | **Silhouette Score** | How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good. |
 Adjust k and watch both metrics together to find the best number of clusters.""")
 
@@ -224,15 +216,14 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                     X_scaled,
                     model_params["init"],
                     model_params["n_init"],
-                    model_params["max_iter"],
-                    model_params["random_state"])
+                    model_params["max_iter"])
 
                 fig, ax = plt.subplots(figsize=(6, 4))
                 ax.plot(range(1, 16), inertias, marker="o", color="blue", lw=2)
                 ax.axvline(model_params["n_clusters"], color="red", linestyle="--", lw=1.5,
                            label=f"Current k = {model_params['n_clusters']}")
                 ax.set_xlabel("Number of clusters (k)")
-                ax.set_ylabel("Inertia/Sum of Squared Distances")
+                ax.set_ylabel("WCSS")
                 ax.set_title("Elbow Plot")
                 ax.legend()
                 st.pyplot(fig)
@@ -241,7 +232,7 @@ Adjust k and watch both metrics together to find the best number of clusters."""
 
             # Scatter plot with clusters shown
             with tab3:
-                pca_2d  = PCA(n_components=2, random_state=int(random_state))
+                pca_2d  = PCA(n_components=2)
                 X_2d    = pca_2d.fit_transform(X_scaled)
                 var_exp = pca_2d.explained_variance_ratio_
 
@@ -326,7 +317,7 @@ Try different linkage methods and compare Silhouette Scores to find the best con
                 cut_height = Z[-(model_params["n_clusters"] - 1), 2]
                 ax.axhline(cut_height, color="red", linestyle="--", lw=1.5,
                            label=f"Cut for k = {model_params['n_clusters']}")
-                ax.set_xlabel("Data points (or cluster size in brackets)")
+                ax.set_xlabel("Data points")
                 ax.set_ylabel("Distance")
                 ax.set_title(f"Dendrogram: {model_params['linkage'].capitalize()} Linkage")
                 ax.legend()
@@ -336,7 +327,7 @@ Try different linkage methods and compare Silhouette Scores to find the best con
 
             # Scatter plot
             with tab3:
-                pca_2d  = PCA(n_components=2, random_state=int(random_state))
+                pca_2d  = PCA(n_components=2)
                 X_2d    = pca_2d.fit_transform(X_scaled)
                 var_exp = pca_2d.explained_variance_ratio_
 
@@ -345,7 +336,7 @@ Try different linkage methods and compare Silhouette Scores to find the best con
                                      alpha=0.7, edgecolors="white", s=50)
                 ax.set_xlabel(f"PC1 ({var_exp[0]*100:.1f}% variance)")
                 ax.set_ylabel(f"PC2 ({var_exp[1]*100:.1f}% variance)")
-                ax.set_title("Cluster Scatter (PCA-reduced to 2D)")
+                ax.set_title("Cluster Scatter (PCA reduced to 2D)")
                 plt.colorbar(scatter, ax=ax, label="Cluster")
                 st.pyplot(fig)
                 plt.close(fig)
