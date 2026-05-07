@@ -100,7 +100,7 @@ with st.sidebar:
 
         if model_name == "K-Means Clustering":
             model_params["n_clusters"] = st.slider(
-                "Number of clusters (k)", 2, 15, 3,
+                "Number of clusters", 2, 15, 3,
                 help="The number of clusters to form. Use the Elbow Plot tab to choose the best k.")
             model_params["n_init"] = st.slider(
                 "Number of initializations", 1, 20, 10,
@@ -111,7 +111,7 @@ with st.sidebar:
 
         elif model_name == "Hierarchical Clustering":
             model_params["n_clusters"] = st.slider(
-                "Number of clusters (k)", 2, 15, 3,
+                "Number of clusters", 2, 15, 3,
                 help="Where to 'cut' the dendrogram. The Dendrogram tab helps you choose this visually.")
             model_params["linkage"] = st.selectbox(
                 "Linkage method", ["ward", "complete", "average", "single"],
