@@ -122,10 +122,9 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 
 ## References
 
-For more information or clarification about some of the machine learning topics used, here are the references I used:
-- [What is K-Means Clustering and how does it work?](https://scikit-learn.org/stable/modules/clustering.html#k-means)
-- [What is Hierarchical Clustering and how does linkage work?](https://scikit-learn.org/stable/modules/clustering.html#hierarchical-clustering)
-- [What is PCA and how is it used for dimensionality reduction?](https://scikit-learn.org/stable/modules/decomposition.html#pca)
-- [What is the Silhouette Score and how is it interpreted?](https://scikit-learn.org/stable/modules/clustering.html#silhouette-coefficient)
-- [What is an Elbow Plot and how do you use it to choose k?](https://www.geeksforgeeks.org/elbow-method-for-optimal-value-of-k-in-kmeans/)
-- [What is a Dendrogram and how do you read it?](https://www.geeksforgeeks.org/scipy-cluster-hierarchy-dendrogram/)
+For more information or clarification about some of the machine learning topics used, here are some references I used:
+- [What is K-Means Clustering?](https://www.youtube.com/watch?v=4b5d3muPQmA&t=18s)
+- [What is Hierarchical Clustering?](https://scikit-learn.org/stable/modules/clustering.html#hierarchical-clustering)
+- [What is PCA and how is it used for dimensionality reduction?](https://www.youtube.com/watch?v=FgakZw6K1QQ)
+- [What is an Elbow Plot?](https://www.geeksforgeeks.org/elbow-method-for-optimal-value-of-k-in-kmeans/)
+- [What is a Dendrogram??](https://www.geeksforgeeks.org/scipy-cluster-hierarchy-dendrogram/)
