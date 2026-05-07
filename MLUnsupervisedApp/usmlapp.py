@@ -244,7 +244,7 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                            c = "black", marker = "X", s = 50, zorder = 5, label = "Centroid of Each Cluster")
                 ax.set_xlabel(f"PC1 ({var_exp[0]*100:.1f}% variance)")
                 ax.set_ylabel(f"PC2 ({var_exp[1]*100:.1f}% variance)")
-                ax.set_title("Cluster Scatter (PCA-reduced to 2D)")
+                ax.set_title("Cluster Scatter with PC1, PC2")
                 ax.legend()
                 plt.colorbar(scatter, ax=ax, label = "Cluster")
                 st.pyplot(fig)
