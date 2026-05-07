@@ -421,26 +421,15 @@ Adjust the number of components and watch the cumulative variance. Aim for the f
                 # Scatter Plot
             with tab1:
                 if n_components >= 2:
-                    color_col = st.selectbox(
-                        "Color points by",
-                        ["None"] + feature_cols,
-                        help="Choose a variable to color the points by. Useful for seeing how a feature maps onto the PCA space.")
                     fig, ax = plt.subplots(figsize=(6, 5))
-                    if color_col == "None":
-                        ax.scatter(X_transformed[:, 0], X_transformed[:, 1],
-                                   alpha=0.7, edgecolors="white", s=50, color="blue")
-                    else:
-                        color_vals = df[color_col].dropna().values[:len(X_transformed)]
-                        scatter = ax.scatter(X_transformed[:, 0], X_transformed[:, 1],
-                                             c=color_vals, cmap="tab10", alpha=0.7,
-                                             edgecolors="white", s=50)
-                        plt.colorbar(scatter, ax=ax, label=color_col)
+                    scatter = ax.scatter(X_transformed[:, 0], X_transformed[:, 1],
+                                         alpha=0.7, edgecolors="white", s=50, color="blue")
                     ax.set_xlabel(f"PC1 ({evr[0]*100:.1f}% variance)")
                     ax.set_ylabel(f"PC2 ({evr[1]*100:.1f}% variance)")
                     ax.set_title("PCA Scatter Plot (PC1 vs PC2)")
                     st.pyplot(fig)
                     plt.close(fig)
-                    st.caption("Each point is one observation projected onto the two strongest principal components. Color a variable to see how it maps onto the PCA space — features with strong loadings will show clear color gradients.")
+                    st.caption("Each point is one observation projected onto the two strongest principal components. Points that cluster together are similar across the selected features. The axis labels show how much variance each component captures.")
                 else:
                     st.info("Select at least 2 components to display the scatter plot.")
                     
