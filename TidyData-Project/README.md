@@ -48,3 +48,16 @@ For background knowledge and motivation of this project, I read [Tidy Data Princ
 ### Pandas Cheat Sheet
 To help in my data cleaning and analysis, I referred to a [Pandas Cheat Sheet](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf).
 
+
+## Visualizations
+For explanations and interpretations of all visualizations, see the final section of `TidyProject.ipynb`.
+ 
+**Average Total Value by Decade**
+<img width="493" height="312" alt="Screenshot 2026-05-07 at 4 52 19 AM" src="https://github.com/user-attachments/assets/2a9be48c-7ff2-4318-acf4-c4c40f3d9e60" />
+
+**Average Total Value by Decade and Source**
+<img width="498" height="311" alt="Screenshot 2026-05-07 at 4 52 47 AM" src="https://github.com/user-attachments/assets/38fa5c2b-239b-4294-aaca-7c9d855ef5ba" />
+ 
+**Top 10 X-Men Members by Total Value**
+<img width="546" height="310" alt="Screenshot 2026-05-07 at 4 53 08 AM" src="https://github.com/user-attachments/assets/8eb3df4f-4217-4b04-a7da-e4fde1c814a7" />
+
