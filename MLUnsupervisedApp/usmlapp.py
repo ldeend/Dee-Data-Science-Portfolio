@@ -25,9 +25,11 @@ def load_csv(file):
 def prepare_data(feature_cols, data):
     """Encode and scale the selected features. Cached by column selection + data."""
     subset = data[list(feature_cols)].copy()
+    
     for col in subset.columns:
         if not pd.api.types.is_numeric_dtype(subset[col]):
             subset[col] = OrdinalEncoder().fit_transform(subset[[col]])
+            
     subset  = subset.dropna()
     X       = subset.values.astype(float)
     X_scaled = StandardScaler().fit_transform(X)
@@ -35,14 +37,16 @@ def prepare_data(feature_cols, data):
 
 @st.cache_data
 def elbow_inertias(X_scaled, init, n_init, max_iter):
-    """Run KMeans for k=1..15 and return WCSS. Cached so slider changes don't rerun this."""
+    """Run KMeans for k=1..15 and return WCSS. Cached so a change in the slider doesn't have to rerun this."""
     inertias = []
+    
     for k in range(1, 16):
         km = KMeans(n_clusters=k, init=init, n_init=n_init,
                     max_iter=max_iter)
         km.fit(X_scaled)
         inertias.append(km.inertia_)
     return inertias
+
 
 @st.cache_data
 def cached_linkage(X_scaled, method):
