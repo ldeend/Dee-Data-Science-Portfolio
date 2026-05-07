@@ -123,12 +123,8 @@ with st.sidebar:
                       "complete: uses the maximum distance between cluster members.\n"
                       "average: uses the mean distance between all pairs.\n"
                       "single: uses the minimum distance, which is prone to chaining."))
-            if model_params["linkage"] == "ward":
-                model_params["metric"] = "euclidean"
-            else:
-                model_params["metric"] = st.selectbox(
-                    "Distance metric", ["euclidean", "manhattan", "cosine"],
-                    help="How distance between points is measured. Euclidean is the standard choice.")
+            model_params["metric"] = "euclidean"
+
 
         elif model_name == "PCA":
             numeric_cols   = [c for c in feature_cols if pd.api.types.is_numeric_dtype(df[c])]
