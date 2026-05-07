@@ -75,3 +75,18 @@ For more information or clarification about some of the machine learning topics 
 - [What is PCA and how is it used for dimensionality reduction?](https://www.youtube.com/watch?v=FgakZw6K1QQ)
 - [What is an Elbow Plot?](https://www.geeksforgeeks.org/elbow-method-for-optimal-value-of-k-in-kmeans/)
 - [What is a Dendrogram??](https://www.geeksforgeeks.org/scipy-cluster-hierarchy-dendrogram/)
+
+
+## Example Screenshots
+
+For these example screenshots, I used the men's college basketball data from 2013 from [this Kaggle link](https://www.kaggle.com/datasets/andrewsundberg/college-basketball-dataset/data). 
+
+**Example Dataset Preview:**
+<img width="985" height="472" alt="Screenshot 2026-04-22 at 8 06 17 PM" src="https://github.com/user-attachments/assets/d50bf049-9798-4fc1-923c-7ea0cb0a8466" />
+
+**Example Evaluation Metrics Panel:**
+<img width="1032" height="392" alt="Screenshot 2026-05-07 at 6 40 39 PM" src="https://github.com/user-attachments/assets/7029e3e7-60f1-44e5-adc3-d82c939e627c" />
+
+
+**Example Performance Visualization:**
+<img width="885" height="759" alt="Screenshot 2026-05-07 at 6 45 32 PM" src="https://github.com/user-attachments/assets/26d5dbf0-b357-4e01-839a-31c36df8150e" />
