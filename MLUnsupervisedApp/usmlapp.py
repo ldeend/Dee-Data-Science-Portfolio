@@ -241,7 +241,7 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                                      alpha=0.7, edgecolors="white", s=50)
                 centers_2d = pca_2d.transform(model.cluster_centers_)
                 ax.scatter(centers_2d[:, 0], centers_2d[:, 1],
-                           c="black", marker="X", s=200, zorder=5, label="Centroids")
+                           c="black", marker="X", s=50, zorder=5, label="Centroids")
                 ax.set_xlabel(f"PC1 ({var_exp[0]*100:.1f}% variance)")
                 ax.set_ylabel(f"PC2 ({var_exp[1]*100:.1f}% variance)")
                 ax.set_title("Cluster Scatter (PCA-reduced to 2D)")
