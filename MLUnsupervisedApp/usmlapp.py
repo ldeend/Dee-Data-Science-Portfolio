@@ -317,8 +317,9 @@ Adjust k and watch both metrics together to find the best number of clusters."""
 | **Silhouette Score** | How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good. |
 Try different linkage methods and compare Silhouette Scores to find the best configuration.""")
 
-            tab1, tab2, tab3 = st.tabs(["Dendrogram", "Cluster Scatter", "Silhouette Analysis"])
+            tab1, tab2, tab3 = st.tabs(["Dendrogram", "Silhouette Plot", "Scatter Plot"])
 
+            # Dendrogram
             with tab1:
                 # cached_linkage only reruns when data or linkage method changes
                 Z = cached_linkage(X_scaled, model_params["linkage"])
@@ -337,7 +338,8 @@ Try different linkage methods and compare Silhouette Scores to find the best con
                 plt.close(fig)
                 st.caption("Each merge represents two clusters combining. The red dashed line shows where the dendrogram is cut for your chosen k. Longer vertical lines before the cut = more distinct clusters.")
 
-            with tab2:
+            # Scatter plot
+            with tab3:
                 pca_2d  = PCA(n_components=2, random_state=int(random_state))
                 X_2d    = pca_2d.fit_transform(X_scaled)
                 var_exp = pca_2d.explained_variance_ratio_
@@ -353,6 +355,7 @@ Try different linkage methods and compare Silhouette Scores to find the best con
                 plt.close(fig)
                 st.caption("Each color represents a cluster. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.")
 
+            # Silhouette Plot
             with tab3:
                 sil_vals   = silhouette_samples(X_scaled, labels)
                 n_clusters = model_params["n_clusters"]
