@@ -219,8 +219,8 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                     model_params["max_iter"])
 
                 fig, ax = plt.subplots(figsize=(6, 4))
-                ax.plot(range(1, 16), inertias, marker="o", color="blue", lw=2)
-                ax.axvline(model_params["n_clusters"], color="red", linestyle="--", lw=1.5,
+                ax.plot(range(1, 16), inertias, marker = "o", color = "blue", lw = 1.5)
+                ax.axvline(model_params["n_clusters"], color = "red", linestyle="--", lw = 1.5,
                            label=f"Current k = {model_params['n_clusters']}")
                 ax.set_xlabel("Number of clusters (k)")
                 ax.set_ylabel("WCSS")
@@ -232,21 +232,21 @@ Adjust k and watch both metrics together to find the best number of clusters."""
 
             # Scatter plot with clusters shown
             with tab3:
-                pca_2d  = PCA(n_components=2)
+                pca_2d  = PCA(n_components = 2)
                 X_2d    = pca_2d.fit_transform(X_scaled)
                 var_exp = pca_2d.explained_variance_ratio_
 
                 fig, ax = plt.subplots(figsize=(6, 5))
-                scatter = ax.scatter(X_2d[:, 0], X_2d[:, 1], c=labels, cmap="tab10",
+                scatter = ax.scatter(X_2d[:, 0], X_2d[:, 1], c = labels, cmap = "tab10",
                                      alpha=0.7, edgecolors="white", s=50)
                 centers_2d = pca_2d.transform(model.cluster_centers_)
                 ax.scatter(centers_2d[:, 0], centers_2d[:, 1],
-                           c="black", marker="X", s=50, zorder=5, label="Centroids")
+                           c = "black", marker = "X", s = 50, zorder = 5, label = "Centroid of Each Cluster")
                 ax.set_xlabel(f"PC1 ({var_exp[0]*100:.1f}% variance)")
                 ax.set_ylabel(f"PC2 ({var_exp[1]*100:.1f}% variance)")
                 ax.set_title("Cluster Scatter (PCA-reduced to 2D)")
                 ax.legend()
-                plt.colorbar(scatter, ax=ax, label="Cluster")
+                plt.colorbar(scatter, ax=ax, label = "Cluster")
                 st.pyplot(fig)
                 plt.close(fig)
                 st.caption("Each color represents a cluster. X marks show centroids. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.")
@@ -268,7 +268,7 @@ Adjust k and watch both metrics together to find the best number of clusters."""
                     ax.text(-0.05, y_lower + 0.5 * size, str(i))
                     y_lower = y_upper + 10
 
-                ax.axvline(sil_score, color="red", linestyle="--", lw=1.5,
+                ax.axvline(sil_score, color = "red", linestyle="--", lw = 1.5,
                            label=f"Avg = {sil_score:.4f}")
                 ax.set_xlabel("Silhouette coefficient")
                 ax.set_ylabel("Cluster")
