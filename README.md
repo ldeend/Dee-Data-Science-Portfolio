@@ -74,7 +74,7 @@ The app has these features:
 - Accepts a CSV dataset uploaded by the user
 - Supports K-Means Clustering, Hierarchical Clustering, and PCA
 - Includes hyperparameters that are all easily adjustable: number of clusters (k), initialization method, linkage method, distance metric, number of components, and more
-- Provides evaluation metrics and visualizations specific to each model — Elbow Plot, Silhouette Analysis, and Cluster Scatter for clustering; Scree Plot, Cumulative Variance, and Component Loadings for PCA
+- Provides evaluation metrics and visualizations specific to each model (Elbow Plot, Silhouette Analysis, and Cluster Scatter for clustering and Scree Plot, Cumulative Variance, and Component Loadings for PCA)
 - Evaluation metrics and visualizations update automatically as hyperparameters are changed, allowing the user to more easily experiment and see the impact of their choices
 - Included guides for how to interpret every metric and visualization
 
