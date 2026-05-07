@@ -136,7 +136,7 @@ with st.sidebar:
 
         elif model_name == "PCA":
             numeric_cols   = [c for c in feature_cols if pd.api.types.is_numeric_dtype(df[c])]
-            max_components = max(len(numeric_cols), 10)
+            max_components = max(len(numeric_cols), 2)
             model_params["n_components"] = st.slider(
                 "Number of components", 1, max_components, min(2, max_components),
                 help="How many principal components to retain. Use the Cumulative Variance tab to choose.")
@@ -416,22 +416,24 @@ Try different linkage methods and compare Silhouette Scores to find the best con
 | **PC1 Variance** | % of variance captured by the first component alone. A very high value means one direction dominates the data. |
 Adjust the number of components and watch the cumulative variance. Aim for the fewest components that still explain 80–90% of variance.""")
 
-            tab1, tab2, tab3 = st.tabs(["Scree Plot", "Cumulative Variance", "Component Loadings"])
+            tab1, tab2 = st.tabs(["Scatter Plot", "Cumulative Variance"])
 
+                # Scatter Plot
             with tab1:
-                fig, ax = plt.subplots(figsize=(6, 4))
-                ax.bar(range(1, n_components + 1), evr * 100,
-                       color="blue", edgecolor="white", alpha=0.8)
-                ax.plot(range(1, n_components + 1), evr * 100,
-                        marker="o", color="red", lw=1.5)
-                ax.set_xlabel("Principal Component")
-                ax.set_ylabel("Variance Explained (%)")
-                ax.set_title("Scree Plot")
-                ax.set_xticks(range(1, n_components + 1))
-                st.pyplot(fig)
-                plt.close(fig)
-                st.caption("Each bar shows how much variance a single component captures. Look for where the bars level off, components after that point add little new information.")
-
+                if n_components >= 2:
+                    fig, ax = plt.subplots(figsize=(6, 5))
+                    scatter = ax.scatter(X_transformed[:, 0], X_transformed[:, 1],
+                             alpha=0.7, edgecolors="white", s=50, color="blue")
+                    ax.set_xlabel(f"PC1 ({evr[0]*100:.1f}% variance)")
+                    ax.set_ylabel(f"PC2 ({evr[1]*100:.1f}% variance)")
+                    ax.set_title("PCA Scatter Plot (PC1 vs PC2)")
+                    st.pyplot(fig)
+                    plt.close(fig)
+                    st.caption("Each point is one observation projected onto the two strongest principal components. Points that cluster together are similar across the selected features. The axis labels show how much variance each component captures.")
+                else:
+                    st.info("Select at least 2 components to display the scatter plot.")
+                    
+            #Cumulative Variance
             with tab2:
                 fig, ax = plt.subplots(figsize=(6, 4))
                 ax.plot(range(1, n_components + 1), cumulative_var * 100,
@@ -447,23 +449,6 @@ Adjust the number of components and watch the cumulative variance. Aim for the f
                 st.pyplot(fig)
                 plt.close(fig)
                 st.caption("Shows how much total variance is captured as you add more components. The orange and red lines mark the 80% and 90% thresholds, which are common targets/reference points for retaining enough information.")
-
-            with tab3:
-                loadings = pd.DataFrame(
-                    model.components_.T,
-                    index=numeric_features,
-                    columns=[f"PC{i+1}" for i in range(n_components)])
-
-                fig, ax = plt.subplots(
-                    figsize=(max(5, n_components * 0.9), max(4, len(numeric_features) * 0.45)))
-                sns.heatmap(loadings, annot=True, fmt=".2f", cmap="coolwarm",
-                            center=0, linewidths=0.5, ax=ax)
-                ax.set_title("Component Loadings")
-                ax.set_xlabel("Principal Component")
-                ax.set_ylabel("Feature")
-                st.pyplot(fig)
-                plt.close(fig)
-                st.caption("Each cell shows how strongly a feature contributes to a component. Red = strong positive loading, blue = strong negative. Features with high absolute values drive that component.")
 
     except Exception as e:
         st.error(f"Model failed: {e}")
