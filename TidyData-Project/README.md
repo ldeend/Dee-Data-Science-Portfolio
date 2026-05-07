@@ -53,7 +53,7 @@ To help in my data cleaning and analysis, I referred to a [Pandas Cheat Sheet](h
 For explanations and interpretations of all visualizations, see the final section of `TidyProject.ipynb`.
  
 **Average Total Value by Decade**
-<img width="493" height="312" alt="Screenshot 2026-05-07 at 4 52 19 AM" src="https://github.com/user-attachments/assets/2a9be48c-7ff2-4318-acf4-c4c40f3d9e60" />
+<img width="496" height="309" alt="Screenshot 2026-05-07 at 6 57 15 AM" src="https://github.com/user-attachments/assets/95ce551d-daaf-4f16-b1a4-72723b8263dd" />
 
 **Average Total Value by Decade and Source**
 <img width="498" height="311" alt="Screenshot 2026-05-07 at 4 52 47 AM" src="https://github.com/user-attachments/assets/38fa5c2b-239b-4294-aaca-7c9d855ef5ba" />
