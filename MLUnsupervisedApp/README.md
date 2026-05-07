@@ -55,13 +55,13 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 - Text columns are encoded automatically using ordinal encoding, and everything is scaled properly before modeling
 
 ### Model Selection
-- Select as many feature (X) variables as desired — no target variable needed for unsupervised learning
+- Select as many feature (X) variables as desired. In unsupervised learning, no target variable is used.
 - Choose between K-Means Clustering, Hierarchical Clustering, and PCA
 - You can choose values for each model's hyperparameters and try different random seeds
 - Every time an aspect of the model is changed (tweaking a hyperparameter, adding a feature, etc.), it re-renders the model automatically, allowing for quick comparison and tuning
 
 
-## Breakdown by Model
+## Models
 
 ### K-Means Clustering
 
@@ -73,14 +73,14 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 | **Max iterations** | Maximum number of iterations per run before stopping. Increase if the model is not converging. |
 | **Random seed** | Controls random initialization. Change this to test stability. |
 
-**Output metrics:** Clusters (k), Inertia, Silhouette Score
+**Output metrics:** Clusters, Inertia (Sum of Squared Distance), Silhouette Score
 - Inertia: Sum of squared distances from each point to its cluster center. Lower = tighter, more compact clusters. Compare across different values of k.
 - Silhouette Score: Measures how similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good.
 
-**Visualizations:** Elbow Plot, Cluster Scatter, Silhouette Analysis
-- Elbow Plot: Look for the 'elbow' — the point where inertia starts decreasing more slowly. The red dashed line marks your current k. Try adjusting k to where the curve bends.
-- Cluster Scatter: Each color represents a cluster. X marks show the cluster centroids. Data is projected onto 2 principal components for visualization — the axis labels show how much variance each direction captures.
-- Silhouette Analysis: Each colored band is a cluster. Wider bands mean more data points in that cluster. Bands that extend past the red average line indicate well-separated clusters. Thin or negative bands suggest that cluster may overlap with another.
+**Visualizations:** Elbow Plot, Scatter Plot, Silhouette Plot
+- Elbow Plot: Look for the 'elbow', the point where inertia starts decreasing more slowly. The red dashed line marks your current k. Try adjusting k to where the curve bends.
+- Scatter Plot: Each color represents a cluster. X marks show the cluster centroids. Data is projected onto 2 principal components for visualization, and the axis labels show how much variance each direction captures.
+- Silhouette Plot: Each colored band is a cluster. Wider bands mean more data points in that cluster. Bands that extend past the red average line indicate well-separated clusters. Thin or negative bands suggest that cluster may overlap with another.
 
 ---
 
@@ -88,8 +88,8 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 
 | Hyperparameter | What it does |
 |----------------|-------------|
-| **k (n_clusters)** | Where to 'cut' the dendrogram. The Dendrogram tab helps you choose this visually — cut where the vertical lines are longest. |
-| **Linkage method** | ward: minimizes variance within clusters. Best general-purpose choice. complete: uses the maximum distance between cluster members. average: uses the mean distance between all pairs. single: uses the minimum distance — prone to chaining. |
+| **k (n_clusters)** | Where to 'cut' the dendrogram. The Dendrogram tab helps you choose this visually. Cut where the vertical lines are longest. |
+| **Linkage method** | ward: minimizes variance within clusters. Best general-purpose choice. complete: uses the maximum distance between cluster members. average: uses the mean distance between all pairs. single: uses the minimum distance, which is prone to chaining. |
 | **Distance metric** | How distance between points is measured. Euclidean is the standard choice. (Ward linkage requires Euclidean.) |
 
 **Output metrics:** Clusters (k), Linkage, Silhouette Score
@@ -97,7 +97,7 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 
 **Visualizations:** Dendrogram, Cluster Scatter, Silhouette Analysis
 - Dendrogram: Each merge represents two clusters combining. The red dashed line shows where the dendrogram is cut for your chosen k. Longer vertical lines before the cut = more distinct clusters.
-- Cluster Scatter: Each color represents a cluster. Data is projected to 2D for visualization — axis labels show how much variance each direction captures.
+- Cluster Scatter: Each color represents a cluster. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.
 - Silhouette Analysis: Wider bands = more data points in that cluster. Bands past the red average line = well-separated clusters. Thin or negative bands suggest that cluster overlaps with another.
 
 ---
@@ -107,7 +107,6 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 | Hyperparameter | What it does |
 |----------------|-------------|
 | **n_components** | How many principal components to retain. More components = more variance explained. Use the Cumulative Variance tab to find the right number. |
-| **Whiten** | Scales each component to unit variance. Useful when features have very different scales, or before feeding PCA output into another model. |
 | **Random seed** | Controls random initialization. Change this to test stability. |
 
 **Output metrics:** Components, Variance Explained, PC1 Variance
@@ -115,8 +114,8 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 - PC1 Variance: % of variance captured by the first (strongest) principal component alone. A very high value means one direction dominates the data.
 
 **Visualizations:** Scree Plot, Cumulative Variance, Component Loadings
-- Scree Plot: Each bar shows how much variance a single principal component captures. Look for where the bars level off — components after that point add little new information.
-- Cumulative Variance: Shows how much total variance is captured as you add more components. The orange and red lines mark the 80% and 90% thresholds — common targets for retaining enough information.
+- Scree Plot: Each bar shows how much variance a single principal component captures. Look for where the bars level off, so components after that point add little new information.
+- Cumulative Variance: Shows how much total variance is captured as you add more components. The orange and red lines mark the 80% and 90% thresholds, which are common targets for retaining enough information.
 - Component Loadings: Each cell shows how strongly a feature contributes to a principal component. Red = strong positive loading, blue = strong negative loading. Features with high absolute values drive that component.
 
 
