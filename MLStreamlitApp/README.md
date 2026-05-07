@@ -2,7 +2,7 @@
 
 An interactive Streamlit application for exploring supervised machine learning models. Upload a CSV dataset, choose a model, tune the hyperparameters, and see how your choices affect model performance.
 
-**[Live Supervised ML App]((https://lucasdee-mlapp.streamlit.app/))**
+**[Live Supervised ML App](https://lucasdee-mlapp.streamlit.app/)**
 
 
 ## Project Overview
