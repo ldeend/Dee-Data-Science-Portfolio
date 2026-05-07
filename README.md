@@ -19,7 +19,7 @@ Learn more about the app's features and how to launch it in the folder `basis_st
 ## [Tidy Data Project](https://github.com/ldeend/Dee-Data-Science-Portfolio/tree/main/TidyData-Project)
 
 ### Project overview
-In this project, I cleaned and transformed the mutant_moneyball.csv dataset using the tidy data principles. I took that dataset and used Python (pandas and matplotlib) to create pivot tables and create visualizations. The original dataset was messy, with inconsistent formatting in cells, columns weren't stacked as they should be, and columns had multiple variables and labels in their names. All of this made the dataset difficult to analyze visually and programmatically. 
+In this project, I cleaned and transformed the mutant_moneyball.csv dataset using the tidy data principles. I took that dataset and used Python (pandas and matplotlib) to create pivot tables and create visualizations (with accompanying explanations). The original dataset was messy, with inconsistent formatting in cells, columns weren't stacked as they should be, and columns had multiple variables and labels in their names. All of this made the dataset difficult to analyze visually and programmatically. 
 
 ### Methodology
 The data was reshaped using `melt()` and splitting the columns and column names with string operations such as `str.split()` or `str.replace()`. This new data was tidy, giving each variable its own unique column and each observation its own unique row. Finally, I used pivot tables and visualizations to show the most popular characters and the valuation across time and source.
