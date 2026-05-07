@@ -49,29 +49,41 @@ def cached_linkage(X_scaled, method):
     """Compute linkage matrix for dendrogram. Cached so it only reruns when data/method changes."""
     return linkage(X_scaled, method=method)
 
+
+
 ## SIDEBAR
 with st.sidebar:
 
     st.header("Upload Dataset")
     dataset = st.file_uploader("Upload a CSV file", type="csv")
     df = None
+    
+    # Ask to upload a CSV file and read it once it is uploaded
     if dataset:
         df = load_csv(dataset)
     else:
         st.info("Upload a CSV file.")
 
+    
+        # Once the dataset is uploaded, reveal the widgets
     if df is not None:
         st.divider()
         st.header("Choose Variables")
         all_cols     = df.columns.tolist()
+        
+        # Allow picking as many explanatory variables as you want, as long as it isn't already picked
         feature_cols = st.multiselect(
             "Feature variables (columns to include in analysis)",
+
+            #default to have 2 immediately show up so it runs right away
             all_cols, default=all_cols[:2])
         if not feature_cols:
             st.error("Select one or more feature variables.")
             st.stop()
 
         st.divider()
+
+        # Choose from the models and have a help section so the user knows exactly what model they are picking.
         st.header("Choose a Model")
         model_name = st.selectbox(
             "Model",
@@ -137,29 +149,37 @@ with st.sidebar:
 if df is None:
     st.info("Upload a dataset to perform analysis.")
     st.stop()
-
+    
+# Dataset preview
 with st.expander("Quick Dataset Preview", expanded=True):
     left_col, right_col = st.columns([1, 2])
 
     with left_col:
         st.markdown("**Column Names:**")
-        # Manually build dtype table as plain strings.
-        # Passing raw dtype objects to st.dataframe crashes pyarrow in newer numpy versions.
+        # Manually build dtype table as plain strings since passing raw dtype objects to st.dataframe crashes pyarrow in newer numpy versions.
+
+        # Left column will show the column names and their data type
+        
         dtype_df = pd.DataFrame({
             "column": df.columns.tolist(),
             "type":   [str(dt) for dt in df.dtypes]
         })
         st.dataframe(dtype_df, width="stretch", hide_index=True)
+        
+        #Underneath, still in the left column, are the dimensions of the dataset
         st.markdown(f"**Rows:** {df.shape[0]}  \n**Columns:** {df.shape[1]}")
 
     with right_col:
         st.markdown("**First 12 rows:**")
+        # Right column will generate the first 12 rows
         st.dataframe(df.head(12), width="stretch")
 
     st.markdown("**Descriptive Statistics:**")
     st.dataframe(df.describe(), width="stretch")
 
 ## TRAINING
+
+    # Choose st.spinner to have the model trained right as a choice/change is made on the sidebar
 with st.spinner("Running the model..."):
     try:
         # prepare_data is cached, only reruns when feature selection or data changes
@@ -185,6 +205,9 @@ with st.spinner("Running the model..."):
             col2.metric("Inertia",          f"{inertia:.2f}")
             col3.metric("Silhouette Score", f"{sil_score:.4f}")
 
+            # WHAT DOES A GOOD SCORE LOOK LIKE?
+            # This will be a dropdown expander below the presented metrics that explains what each is and a good score for them.
+            
             with st.expander("How do I interpret these metrics?"):
                 st.markdown("""
 | Metric | What it measures |
@@ -277,6 +300,9 @@ Adjust k and watch both metrics together to find the best number of clusters."""
             col2.metric("Linkage",          model_params["linkage"].capitalize())
             col3.metric("Silhouette Score", f"{sil_score:.4f}")
 
+            # WHAT DOES A GOOD SCORE LOOK LIKE?
+            # This will be a dropdown expander below the presented metrics that explains what each is and a good score for them.
+            
             with st.expander("How do I interpret these metrics?"):
                 st.markdown("""
 | Metric | What it measures |
@@ -372,6 +398,10 @@ Try different linkage methods and compare Silhouette Scores to find the best con
             col2.metric("Variance Explained", f"{cumulative_var[-1]*100:.2f}%")
             col3.metric("PC1 Variance",       f"{evr[0]*100:.2f}%")
 
+
+            # WHAT DOES A GOOD SCORE LOOK LIKE?
+            # This will be a dropdown expander below the presented metrics that explains what each is and a good score for them.
+            
             with st.expander("How do I interpret these metrics?"):
                 st.markdown("""
 | Metric | What it measures |
