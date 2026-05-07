@@ -103,7 +103,7 @@ with st.sidebar:
                 "Number of clusters (k)", 2, 15, 3,
                 help="The number of clusters to form. Use the Elbow Plot tab to choose the best k.")
             model_params["n_init"] = st.slider(
-                "Number of initializations (n_init)", 1, 20, 10,
+                "Number of initializations", 1, 20, 10,
                 help="How many times the algorithm runs with different seeds. The best result is kept.")
             model_params["max_iter"] = st.slider(
                 "Max iterations", 50, 500, 300, step=50,
