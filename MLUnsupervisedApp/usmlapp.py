@@ -136,7 +136,7 @@ with st.sidebar:
 
         elif model_name == "PCA":
             numeric_cols   = [c for c in feature_cols if pd.api.types.is_numeric_dtype(df[c])]
-            max_components = max(len(numeric_cols), 2)
+            max_components = max(len(numeric_cols), 10)
             model_params["n_components"] = st.slider(
                 "Number of components", 1, max_components, min(2, max_components),
                 help="How many principal components to retain. Use the Cumulative Variance tab to choose.")
