@@ -2,7 +2,7 @@
 
 An interactive Streamlit application for exploring Division I men's college basketball stats. The dataset is already loaded and described below. Use the filters to explore teams, conferences, and win totals for the current season. Run locally using the Setup Instructions or follow this link:
 
-**[Live College Basketball App](https://cbb-basic-app.streamlit.app/)**
+**[College Basketball App](https://cbb-basic-app.streamlit.app/)**
 
 
 ## Project Overview
