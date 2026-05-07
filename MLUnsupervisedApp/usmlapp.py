@@ -14,9 +14,8 @@ st.set_page_config(page_title="Unsupervised Machine Learning Tool", layout="wide
 st.title("Unsupervised Machine Learning Tool")
 st.markdown("Upload a dataset, experiment with hyperparameters, and observe how these affect model training and performance.")
 
-# ---------------------------------------------------------------------------
-# CACHING — prevents heavy computations from rerunning on every widget change
-# ---------------------------------------------------------------------------
+
+# Caching here to prevent heavy computations from rerunning on every widget change, had some issues with the app being slow or crashing
 
 @st.cache_data
 def load_csv(file):
@@ -163,7 +162,7 @@ with st.expander("Quick Dataset Preview", expanded=True):
 ## TRAINING
 with st.spinner("Running the model..."):
     try:
-        # prepare_data is cached — only reruns when feature selection or data changes
+        # prepare_data is cached, only reruns when feature selection or data changes
         X_scaled, all_var, num_dropped = prepare_data(tuple(feature_cols), df)
 
         if num_dropped == 1:
@@ -198,7 +197,7 @@ Adjust k and watch both metrics together to find the best number of clusters."""
             tab1, tab2, tab3 = st.tabs(["Elbow Plot", "Cluster Scatter", "Silhouette Analysis"])
 
             with tab1:
-                # elbow_inertias is cached — changing k slider won't re-run all 15 fits
+                # elbow_inertias is cached, so changing k slider won't rerun all 15 fits
                 inertias = elbow_inertias(
                     X_scaled,
                     model_params["init"],
