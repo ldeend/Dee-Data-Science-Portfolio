@@ -128,7 +128,6 @@ with st.sidebar:
                       "single: uses the minimum distance, which is prone to chaining."))
             if model_params["linkage"] == "ward":
                 model_params["metric"] = "euclidean"
-                st.caption("Ward linkage requires Euclidean distance.")
             else:
                 model_params["metric"] = st.selectbox(
                     "Distance metric", ["euclidean", "manhattan", "cosine"],
