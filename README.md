@@ -1,12 +1,6 @@
 # Data Science Portfolio
 
-This repository is intended to showcase my data science projects and capabilities. I will have work related to data analysis, modeling, and machine learning.
-
-## Planned Project Structure
-
-This repository will be home to many different kinds of work. The primary concepts that will be present in these projects are `Exploratory Data Analysis`, `Data Cleaning and Visualization`, and `Statistical and Machine Learning Modeling`.
-
-For each project, there will be a folder containing the dataset, methodology, results, insights, and steps for reproducibility in the README.
+This repository is intended to showcase my data science projects and capabilities. I will have work related to data analysis, modeling, and machine learning. Take a glance at my quick descriptions below and follow the links for any project that catches your interest.
 
 
 ## [College Basketball Stats Streamlit App](https://github.com/ldeend/Dee-Data-Science-Portfolio/tree/main/basic_streamlit_app)
