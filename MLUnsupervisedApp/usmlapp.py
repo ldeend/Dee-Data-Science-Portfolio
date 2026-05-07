@@ -217,7 +217,7 @@ with st.spinner("Running the model..."):
 | **Silhouette Score** | How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good. |
 Adjust k and watch both metrics together to find the best number of clusters.""")
 
-            tab1, tab2, tab3 = st.tabs(["Elbow Plot", "Scatter Plot", "Silhouette Plot"])
+            tab1, tab2, tab3 = st.tabs(["Elbow Plot", "Silhouette Plot", "Scatter Plot"])
 
 
                 # Elbow plot
