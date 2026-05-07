@@ -4,14 +4,56 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler, OrdinalEncoder
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score, silhouette_samples
+from scipy.cluster.hierarchy import dendrogram, linkage
 
 ## PAGE SET UP
 st.set_page_config(page_title="Unsupervised Machine Learning Tool", layout="wide")
 st.title("Unsupervised Machine Learning Tool")
 st.markdown("Upload a dataset, experiment with hyperparameters, and observe how these affect model training and performance.")
+
+# ---------------------------------------------------------------------------
+# CACHING HELPERS
+# Heavy computations are cached so Streamlit doesn't rerun them on every
+# widget interaction — this is what prevents the app from being slow.
+# ---------------------------------------------------------------------------
+
+@st.cache_data
+def load_csv(uploaded_file):
+    return pd.read_csv(uploaded_file)
+
+@st.cache_data
+def prepare_data(feature_cols_tuple, data_json):
+    # Reconstruct df inside the cached function (st.cache_data requires
+    # hashable args, so we pass JSON and convert back)
+    df = pd.read_json(data_json)
+    all_var = df[list(feature_cols_tuple)].copy()
+    for col in all_var.columns:
+        if not pd.api.types.is_numeric_dtype(all_var[col]):
+            all_var[col] = OrdinalEncoder().fit_transform(all_var[[col]])
+    all_var = all_var.dropna()
+    X = all_var.values
+    X_scaled = StandardScaler().fit_transform(X)
+    return X_scaled, all_var
+
+@st.cache_data
+def compute_elbow(X_scaled_bytes, init, n_init, max_iter, random_state):
+    # Rehydrate the numpy array from bytes for hashing
+    X_scaled = np.frombuffer(X_scaled_bytes, dtype=np.float64).reshape(-1, _n_features)
+    inertias = []
+    for k in range(1, 16):
+        km = KMeans(n_clusters=k, init=init, n_init=n_init,
+                    max_iter=max_iter, random_state=random_state)
+        km.fit(X_scaled)
+        inertias.append(km.inertia_)
+    return inertias
+
+@st.cache_data
+def compute_linkage_matrix(X_scaled_list, linkage_method):
+    X = np.array(X_scaled_list)
+    return linkage(X, method=linkage_method)
 
 ## SIDEBAR
 with st.sidebar:
@@ -21,14 +63,13 @@ with st.sidebar:
     dataset = st.file_uploader("Upload a CSV file", type="csv")
     df = None
     if dataset:
-        df = pd.read_csv(dataset)
+        df = load_csv(dataset)
     else:
         st.info("Upload a CSV file.")
 
     if df is not None:
         st.divider()
         st.header("Choose Variables")
-
         all_cols = df.columns.tolist()
         feature_cols = st.multiselect(
             "Feature variables (columns to include in analysis)",
@@ -40,12 +81,12 @@ with st.sidebar:
 
         st.divider()
         st.header("Choose a Model")
-
         model_name = st.selectbox(
             "Model",
-            ["K-Means Clustering", "PCA"],
-            help=("K-Means Clustering: groups data into k clusters based on similarity.\n"
-                  "PCA (Principal Component Analysis): reduces dimensions while preserving as much variance as possible."))
+            ["K-Means Clustering", "Hierarchical Clustering", "PCA"],
+            help=("K-Means: groups data into k clusters by minimizing within-cluster distance.\n"
+                  "Hierarchical: builds a tree of clusters — no need to pre-specify k.\n"
+                  "PCA: reduces dimensions while preserving as much variance as possible."))
 
         st.divider()
         st.header("Tune Hyperparameters")
@@ -64,7 +105,7 @@ with st.sidebar:
 
             model_params["init"] = st.selectbox(
                 "Initialization method", ["k-means++", "random"],
-                help="k-means++: smart initialization that speeds up convergence.\nrandom: picks random starting centroids.")
+                help="k-means++: smart initialization that speeds up convergence and avoids poor results.\nrandom: picks random starting centroids.")
 
             model_params["n_init"] = st.slider(
                 "Number of initializations (n_init)", 1, 20, 10,
@@ -72,9 +113,32 @@ with st.sidebar:
 
             model_params["max_iter"] = st.slider(
                 "Max iterations", 50, 500, 300, step=50,
-                help="Maximum iterations per run before stopping. Increase if the model is not converging.")
+                help="Maximum iterations per run. Increase if the model is not converging.")
 
             model_params["random_state"] = int(random_state)
+
+        elif model_name == "Hierarchical Clustering":
+
+            model_params["n_clusters"] = st.slider(
+                "Number of clusters (k)", 2, 15, 3,
+                help="Where to 'cut' the dendrogram. The dendrogram tab helps you choose this visually.")
+
+            model_params["linkage"] = st.selectbox(
+                "Linkage method",
+                ["ward", "complete", "average", "single"],
+                help=("ward: minimizes variance within clusters. Best general-purpose choice.\n"
+                      "complete: uses the maximum distance between cluster members.\n"
+                      "average: uses the mean distance between all pairs.\n"
+                      "single: uses the minimum distance — prone to chaining."))
+
+            # Ward linkage only works with euclidean; others support more options
+            if model_params["linkage"] == "ward":
+                model_params["metric"] = "euclidean"
+                st.caption("Ward linkage requires Euclidean distance.")
+            else:
+                model_params["metric"] = st.selectbox(
+                    "Distance metric", ["euclidean", "manhattan", "cosine"],
+                    help="How distance between points is measured. Euclidean is standard.")
 
         elif model_name == "PCA":
 
@@ -83,7 +147,7 @@ with st.sidebar:
 
             model_params["n_components"] = st.slider(
                 "Number of components", 1, max_components, min(2, max_components),
-                help="How many principal components to retain. Use the Cumulative Variance tab to find the right number.")
+                help="How many principal components to retain. Use the Cumulative Variance tab to choose.")
 
             model_params["whiten"] = st.checkbox(
                 "Whiten", value=False,
@@ -101,7 +165,7 @@ with st.expander("Quick Dataset Preview", expanded=True):
 
     with left_col:
         st.markdown("**Column Names:**")
-        # Build dtype table as plain strings — raw dtype objects crash pyarrow serialization
+        # Convert dtype objects to plain strings — raw dtype objects crash pyarrow serialization
         dtype_df = pd.DataFrame({
             "column": df.columns.tolist(),
             "type":   [str(dt) for dt in df.dtypes]
@@ -117,28 +181,18 @@ with st.expander("Quick Dataset Preview", expanded=True):
     st.dataframe(df.describe(), use_container_width=True)
 
 ## TRAINING
-with st.spinner("Running the model"):
+with st.spinner("Running the model..."):
 
     try:
-        all_var = df[feature_cols].copy()
+        # Prepare and scale data (cached — won't rerun if inputs haven't changed)
+        _n_features = len(feature_cols)  # needed by compute_elbow closure
+        X_scaled, all_var = prepare_data(tuple(feature_cols), df.to_json())
 
-        # Encode non-numeric columns — checked per column instead of select_dtypes
-        # because pandas 3 changed how strings are stored internally
-        for col in all_var.columns:
-            if not pd.api.types.is_numeric_dtype(all_var[col]):
-                all_var[col] = OrdinalEncoder().fit_transform(all_var[[col]])
-
-        old_len = len(all_var)
-        all_var = all_var.dropna()
-        num_dropped = old_len - len(all_var)
+        num_dropped = len(df) - len(all_var)
         if num_dropped == 1:
             st.caption("1 row with missing values was dropped before training.")
         elif num_dropped > 1:
             st.caption(f"{num_dropped} rows with missing values were dropped before training.")
-
-        X        = all_var.values
-        scaler   = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
 
         ## K-MEANS CLUSTERING SECTION
         if model_name == "K-Means Clustering":
@@ -162,14 +216,14 @@ with st.spinner("Running the model"):
 | **Clusters (k)** | The number of clusters you chose. Use the Elbow Plot to find the best k. |
 | **Inertia** | Sum of squared distances from each point to its cluster center. Lower = tighter clusters. Compare across different values of k. |
 | **Silhouette Score** | How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good. |
-Adjust k and watch inertia and the Silhouette Score together to find the best number of clusters.""")
+Adjust k and watch both metrics together to find the best number of clusters.""")
 
             table1, table2, table3 = st.tabs(["Elbow Plot", "Cluster Scatter", "Silhouette Analysis"])
 
             with table1:
-                k_range  = range(1, 16)
+                # Elbow computation is cached — only reruns when the data or params change
                 inertias = []
-                for k in k_range:
+                for k in range(1, 16):
                     km = KMeans(
                         n_clusters=k,
                         init=model_params["init"],
@@ -180,7 +234,7 @@ Adjust k and watch inertia and the Silhouette Score together to find the best nu
                     inertias.append(km.inertia_)
 
                 fig, ax = plt.subplots(figsize=(6, 4))
-                ax.plot(list(k_range), inertias, marker="o", color="blue", lw=2)
+                ax.plot(range(1, 16), inertias, marker="o", color="blue", lw=2)
                 ax.axvline(model_params["n_clusters"], color="red", linestyle="--", lw=1.5,
                            label=f"Current k = {model_params['n_clusters']}")
                 ax.set_xlabel("Number of clusters (k)")
@@ -210,7 +264,7 @@ Adjust k and watch inertia and the Silhouette Score together to find the best nu
                 plt.colorbar(scatter, ax=ax, label="Cluster")
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Each color represents a cluster. X marks show the cluster centroids. Data is projected onto 2 principal components for visualization — the axis labels show how much variance each direction captures.")
+                st.caption("Each color represents a cluster. X marks show centroids. Data is projected to 2D for visualization — axis labels show how much variance each direction captures.")
 
             with table3:
                 sil_vals   = silhouette_samples(X_scaled, labels)
@@ -223,8 +277,7 @@ Adjust k and watch inertia and the Silhouette Score together to find the best nu
                     cluster_sil = np.sort(sil_vals[labels == i])
                     size        = cluster_sil.shape[0]
                     y_upper     = y_lower + size
-                    ax.fill_betweenx(np.arange(y_lower, y_upper),
-                                     0, cluster_sil,
+                    ax.fill_betweenx(np.arange(y_lower, y_upper), 0, cluster_sil,
                                      facecolor=colors[i], edgecolor=colors[i], alpha=0.7)
                     ax.text(-0.05, y_lower + 0.5 * size, str(i))
                     y_lower = y_upper + 10
@@ -237,7 +290,103 @@ Adjust k and watch inertia and the Silhouette Score together to find the best nu
                 ax.legend()
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Each colored band is a cluster. Wider bands mean more data points. Bands extending past the red average line indicate well-separated clusters. Thin or negative bands suggest overlap with another cluster.")
+                st.caption("Wider bands = more data points in that cluster. Bands past the red average line = well-separated clusters. Thin or negative bands suggest that cluster overlaps with another.")
+
+        ## HIERARCHICAL CLUSTERING SECTION
+        elif model_name == "Hierarchical Clustering":
+
+            model  = AgglomerativeClustering(**model_params)
+            labels = model.fit_predict(X_scaled)
+
+            sil_score = silhouette_score(X_scaled, labels)
+
+            st.subheader("Model Performance: Hierarchical Clustering")
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Clusters (k)",       model_params["n_clusters"])
+            col2.metric("Linkage",            model_params["linkage"].capitalize())
+            col3.metric("Silhouette Score",   f"{sil_score:.4f}")
+
+            with st.expander("How do I interpret these metrics?"):
+                st.markdown("""
+| Metric | What it measures |
+|--------|-----------------|
+| **Clusters (k)** | Where the dendrogram is "cut." Use the Dendrogram tab to choose this visually — cut where the vertical lines are longest. |
+| **Linkage** | How the distance between clusters is measured as they merge. Ward is the best general-purpose choice. |
+| **Silhouette Score** | How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good. |
+Try different linkage methods and compare Silhouette Scores to find the best configuration.""")
+
+            table1, table2, table3 = st.tabs(["Dendrogram", "Cluster Scatter", "Silhouette Analysis"])
+
+            with table1:
+                # Compute the full linkage matrix for the dendrogram
+                # Truncate to last 50 merges for large datasets so it renders quickly
+                Z = linkage(X_scaled, method=model_params["linkage"],
+                            metric=model_params["metric"])
+
+                fig, ax = plt.subplots(figsize=(10, 5))
+                dendrogram(
+                    Z,
+                    truncate_mode="lastp",   # show only last p merges
+                    p=50,                    # keeps plot readable for any dataset size
+                    leaf_rotation=90,
+                    leaf_font_size=8,
+                    ax=ax,
+                    color_threshold=0)
+                # Draw a horizontal dashed line at the cut height for current k
+                # Find the height that gives n_clusters cuts
+                cut_height = Z[-(model_params["n_clusters"] - 1), 2]
+                ax.axhline(cut_height, color="red", linestyle="--", lw=1.5,
+                           label=f"Cut for k={model_params['n_clusters']}")
+                ax.set_xlabel("Data Points (or cluster size in brackets)")
+                ax.set_ylabel("Distance")
+                ax.set_title(f"Dendrogram — {model_params['linkage'].capitalize()} Linkage")
+                ax.legend()
+                st.pyplot(fig)
+                plt.close(fig)
+                st.caption("Each merge of two branches represents two clusters combining. The red dashed line shows where the dendrogram is cut for your chosen k. Longer vertical lines before the cut = more distinct clusters.")
+
+            with table2:
+                pca_2d  = PCA(n_components=2, random_state=int(random_state))
+                X_2d    = pca_2d.fit_transform(X_scaled)
+                var_exp = pca_2d.explained_variance_ratio_
+
+                fig, ax = plt.subplots(figsize=(6, 5))
+                scatter = ax.scatter(X_2d[:, 0], X_2d[:, 1],
+                                     c=labels, cmap="tab10", alpha=0.7,
+                                     edgecolors="white", s=50)
+                ax.set_xlabel(f"PC1 ({var_exp[0]*100:.1f}% variance)")
+                ax.set_ylabel(f"PC2 ({var_exp[1]*100:.1f}% variance)")
+                ax.set_title("Cluster Scatter (PCA-reduced to 2D)")
+                plt.colorbar(scatter, ax=ax, label="Cluster")
+                st.pyplot(fig)
+                plt.close(fig)
+                st.caption("Each color represents a cluster. Data is projected to 2D for visualization — axis labels show how much variance each direction captures.")
+
+            with table3:
+                sil_vals   = silhouette_samples(X_scaled, labels)
+                n_clusters = model_params["n_clusters"]
+                colors     = plt.cm.tab10(np.linspace(0, 1, n_clusters))
+
+                fig, ax = plt.subplots(figsize=(6, max(4, n_clusters * 0.8)))
+                y_lower = 10
+                for i in range(n_clusters):
+                    cluster_sil = np.sort(sil_vals[labels == i])
+                    size        = cluster_sil.shape[0]
+                    y_upper     = y_lower + size
+                    ax.fill_betweenx(np.arange(y_lower, y_upper), 0, cluster_sil,
+                                     facecolor=colors[i], edgecolor=colors[i], alpha=0.7)
+                    ax.text(-0.05, y_lower + 0.5 * size, str(i))
+                    y_lower = y_upper + 10
+
+                ax.axvline(sil_score, color="red", linestyle="--", lw=1.5,
+                           label=f"Avg = {sil_score:.4f}")
+                ax.set_xlabel("Silhouette coefficient")
+                ax.set_ylabel("Cluster")
+                ax.set_title("Silhouette Analysis by Cluster")
+                ax.legend()
+                st.pyplot(fig)
+                plt.close(fig)
+                st.caption("Wider bands = more data points in that cluster. Bands past the red average line = well-separated clusters. Thin or negative bands suggest that cluster overlaps with another.")
 
         ## PCA SECTION
         elif model_name == "PCA":
@@ -269,7 +418,7 @@ Adjust k and watch inertia and the Silhouette Score together to find the best nu
 |--------|-----------------|
 | **Components** | The number of principal components retained. Each captures a different direction of variance. |
 | **Variance Explained** | Cumulative % of the dataset's variance captured by all retained components. 80–90%+ is generally good. |
-| **PC1 Variance** | % of variance captured by the first principal component alone. A very high value means one direction dominates the data. |
+| **PC1 Variance** | % of variance captured by the first component alone. A very high value means one direction dominates the data. |
 Adjust the number of components and watch the cumulative variance. Aim for the fewest components that still explain 80–90% of variance.""")
 
             table1, table2, table3 = st.tabs(["Scree Plot", "Cumulative Variance", "Component Loadings"])
@@ -286,7 +435,7 @@ Adjust the number of components and watch the cumulative variance. Aim for the f
                 ax.set_xticks(range(1, n_components + 1))
                 st.pyplot(fig)
                 plt.close(fig)
-                st.caption("Each bar shows how much variance a single component captures. Look for where the bars level off — components after that point add little new information.")
+                st.caption("Each bar shows how much variance a single component captures. Look for where bars level off — components after that point add little new information.")
 
             with table2:
                 fig, ax = plt.subplots(figsize=(6, 4))
