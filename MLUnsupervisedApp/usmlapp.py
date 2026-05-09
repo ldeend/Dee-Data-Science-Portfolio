@@ -18,16 +18,19 @@ st.markdown("Upload a dataset, experiment with hyperparameters, and observe how 
 # Caching here to prevent heavy computations from rerunning on every widget change, had some issues with the app being slow or crashing
 
 @st.cache_data
-def load_csv(file):
+def load_csv_file(file):
+    
     return pd.read_csv(file)
 
 @st.cache_data
 def prepare_data(feature_cols, data):
-    """Encode and scale the selected features. Cached by column selection + data."""
+    
     subset = data[list(feature_cols)].copy()
     
+    # Encode and scale the selected features for the visualizations, I have it cached by column and data.    
     for col in subset.columns:
         if not pd.api.types.is_numeric_dtype(subset[col]):
+            
             subset[col] = OrdinalEncoder().fit_transform(subset[[col]])
             
     subset  = subset.dropna()
@@ -37,6 +40,7 @@ def prepare_data(feature_cols, data):
 
 @st.cache_data
 def elbow_inertias(X_scaled, init, n_init, max_iter):
+    
     """Run KMeans for k=1..15 and return WCSS. Cached so a change in the slider doesn't have to rerun this."""
     inertias = []
     
@@ -50,6 +54,7 @@ def elbow_inertias(X_scaled, init, n_init, max_iter):
 
 @st.cache_data
 def cached_linkage(X_scaled, method):
+    
     """Compute linkage matrix for dendrogram. Cached so it only reruns when data/method changes."""
     return linkage(X_scaled, method=method)
 
@@ -64,7 +69,7 @@ with st.sidebar:
     
     # Ask to upload a CSV file and read it once it is uploaded
     if dataset:
-        df = load_csv(dataset)
+        df = load_csv_file(dataset)
     else:
         st.info("Upload a CSV file.")
 
@@ -311,8 +316,8 @@ Try different linkage methods and compare Silhouette Scores to find the best con
                 Z = cached_linkage(X_scaled, model_params["linkage"])
 
                 fig, ax = plt.subplots(figsize=(10, 5))
-                dendrogram(Z, truncate_mode="lastp", p=50,
-                           leaf_rotation=90, leaf_font_size=8, ax=ax, color_threshold=0)
+                dendrogram(Z, truncate_mode="lastp", p = 50,
+                           leaf_rotation=90, leaf_font_size = 8, ax = ax, color_threshold=0)
                 cut_height = Z[-(model_params["n_clusters"] - 1), 2]
                 ax.axhline(cut_height, color="red", linestyle="--", lw=1.5,
                            label=f"Cut for k = {model_params['n_clusters']}")
@@ -400,9 +405,9 @@ Adjust the number of components and watch the cumulative variance. Aim for the f
             with tab2:
                 fig, ax = plt.subplots(figsize=(6, 4))
                 ax.plot(range(1, n_components + 1), cumulative_var * 100,
-                        marker="o", color="blue", lw=2)
-                ax.axhline(80, color="orange", linestyle="--", lw=1, label="80% threshold")
-                ax.axhline(90, color="red",    linestyle="--", lw=1, label="90% threshold")
+                        marker = "o", color = "blue", lw = 2)
+                ax.axhline(80, color = "orange", linestyle = "--", lw=1, label = "80% threshold")
+                ax.axhline(90, color="red",    linestyle = "--", lw=1, label = "90% threshold")
                 ax.set_xlabel("Number of Components")
                 ax.set_ylabel("Cumulative Variance Explained (%)")
                 ax.set_title("Cumulative Explained Variance")
