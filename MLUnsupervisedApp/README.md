@@ -73,17 +73,16 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 
 | Hyperparameter | What it does |
 |----------------|-------------|
-| **Number of clusters k** | The number of clusters to form. Use the Elbow Plot tab to choose the best k. |
-| **Number of initializations** | How many times the algorithm runs with different seeds. The best result is kept. |
-| **Max iterations** | Maximum iterations per run. Increase if the model is not converging. |
+| **Number of clusters k** | The number of clusters to sort the data into. |
+| **Number of initializations** | How many times the algorithm tries the model with different seeds. The best result is kept. |
+| **Max iterations** | Maximum iterations per run. |
 
-**Output metrics:** Clusters (k), WCSS, Silhouette Score
-- WCSS: Sum of squared distances from each point to its cluster center. Lower = tighter clusters. Compare across different values of k.
-- Silhouette Score: How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good.
-- Adjust k and watch both metrics together to find the best number of clusters.
+**Output metrics:** Clusters, WCSS, Silhouette Score
+- WCSS: Sum of squared distances from each point to its cluster center. Lower means tighter grouped clusters.
+- Silhouette Score: A metric comparing a point to its own cluster vs nearby clusters. It ranges from -1 to 1 with 0.5+ considered good and 0.7+ considered great.
 
 **Visualizations:** Elbow Plot, Silhouette Plot, Scatter Plot
-- Elbow Plot: Look for the 'elbow' aka the point where inertia starts decreasing more slowly. The red dashed line marks your current k. Try adjusting k to where the curve bends.
+- Elbow Plot: Plot of WCSS against number of clusters. The red line marks the current value of k, and the Look for the 'elbow' aka the point where inertia starts decreasing more slowly. The red dashed line marks your current k. Try adjusting k to where the curve bends.
 - Silhouette Plot: Wider bands = more data points in that cluster. Bands past the red average line = well-separated clusters. Thin or negative bands suggest that cluster overlaps with another.
 - Scatter Plot: Each color represents a cluster. X marks show centroids. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.
 
@@ -117,7 +116,7 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 - Components: The number of principal components used, each capturing a different direction of variance.
 - Variance Explained: Cumulative percentage of the dataset's variance captured by all used components. 80% to 90% and above is generally good.
 - PC1 Variance: The percent of variance captured by the first component alone.
-- Adjust the number of components and watch the cumulative variance. Ideally, have high variance explained with few components.
+- Ideally, have high variance explained with few components.
 
 **Visualizations:** Scatter Plot, Cumulative Variance
 - Scatter Plot: Each point is one observation projected onto the two strongest principal components. Points that cluster together are similar across the selected features. The axis labels show how much variance each component captures.
