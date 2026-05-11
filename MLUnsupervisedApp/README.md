@@ -82,10 +82,9 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 - Silhouette Score: A metric comparing a point to its own cluster vs nearby clusters. It ranges from -1 to 1 with 0.5+ considered good and 0.7+ considered great.
 
 **Visualizations:** Elbow Plot, Silhouette Plot, Scatter Plot
-- Elbow Plot: Plot of WCSS against number of clusters. The red line marks the current value of k, and the Look for the 'elbow' aka the point where inertia starts decreasing more slowly. The red dashed line marks your current k. Try adjusting k to where the curve bends.
-- Silhouette Plot: Wider bands = more data points in that cluster. Bands past the red average line = well-separated clusters. Thin or negative bands suggest that cluster overlaps with another.
-- Scatter Plot: Each color represents a cluster. X marks show centroids. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.
-
+- Elbow Plot: Plot of WCSS against number of clusters. Ideally choose k at the "elbow" aka when the WCSS curve bends.
+- Silhouette Plot: Wider bands means more data points in that cluster. Bands past the red average line indicate well separated clusters.
+- Scatter Plot: Each color represents a cluster and the X's show centroids.
 
 ### Hierarchical Clustering
 
@@ -98,12 +97,12 @@ This will launch the app in your browser at the IP `http://localhost:8501/`.
 **Output metrics:** Clusters (k), Linkage, Silhouette Score
 - Clusters (k): Where the dendrogram is "cut." Use the Dendrogram tab to choose this visually — cut where vertical lines are longest.
 - Linkage: How distance between clusters is measured as they merge. Ward is the best general-purpose choice.
-- Silhouette Score: How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1. Above 0.5 is good.
+- Silhouette Score: How similar each point is to its own cluster vs. neighboring clusters. Ranges from -1 to 1 and above 0.5 is good.
 - Try different linkage methods and compare Silhouette Scores to find the best configuration.
 
 **Visualizations:** Dendrogram, Scatter Plot
-- Dendrogram: Each merge represents two clusters combining. The red dashed line shows where the dendrogram is cut for your chosen k. Longer vertical lines before the cut = more distinct clusters.
-- Scatter Plot: Each color represents a cluster. Data is projected to 2D for visualization, and axis labels show how much variance each direction captures.
+- Dendrogram: A tree like diagram to visualize the hierarchical relationships between the clusters. Similar clusters are more closely connected with shorter heights between their trees, and longer trees connecting them, indicating less similar clusters.
+- Scatter Plot: Each color represents a cluster.
 
 
 ### PCA (Principal Component Analysis)
